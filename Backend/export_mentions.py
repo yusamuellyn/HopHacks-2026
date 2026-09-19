@@ -27,31 +27,20 @@ def main(left_id, right_id):
     conn = get_conn()
     cur = conn.cursor()
 
-    left_conditions = " OR ".join(["text ILIKE %s"] * len(left_terms))
-    right_conditions = " OR ".join(["text ILIKE %s"] * len(right_terms))
-
-    query = f"""
+    # Reads the precomputed meme_mentions table (see build_mentions.py)
+    # instead of ILIKE-scanning the full tweets table.
+    query = """
         SELECT
             tweet_id,
-            text,
-            ts,
-            CASE
-                WHEN {left_conditions} THEN %s
-                WHEN {right_conditions} THEN %s
-            END AS meme_id
-        FROM tweets_raw
-        WHERE {left_conditions} OR {right_conditions}
+            body AS text,
+            created_at AS ts,
+            meme_id
+        FROM meme_mentions
+        WHERE meme_id IN (%s, %s)
+        ORDER BY created_at
     """
 
-    params = (
-        [f"%{t}%" for t in left_terms]
-        + [f"%{t}%" for t in right_terms]
-        + [left_id, right_id]
-        + [f"%{t}%" for t in left_terms]
-        + [f"%{t}%" for t in right_terms]
-    )
-
-    cur.execute(query, params)
+    cur.execute(query, [left_id, right_id])
     rows = cur.fetchall()
 
     out_path = f"mentions_{left_id}_vs_{right_id}.csv"
