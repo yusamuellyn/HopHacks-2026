@@ -18,7 +18,7 @@ export default function MemeSearch({
   }, [value])
 
   const matches = useMemo(() => {
-    return searchMemes(query).filter((meme) => meme.id !== excludeId).slice(0, 7)
+    return searchMemes(query).filter((meme) => meme.id !== excludeId).slice(0, 60)
   }, [query, excludeId])
 
   useEffect(() => {

@@ -50,7 +50,7 @@ function downloadShareCard({ left, right, winner, winnerShare }) {
   link.click()
 }
 
-export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
+export default function Arena({ left, right, stats, onRematch, onBattleEnd })  {
   const { fx } = useFx()
   const [feed, setFeed] = useState([])
   const [frame, setFrame] = useState(null)
@@ -268,7 +268,10 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
           <span>Mentions: {animatedLeft}</span>
           {fx.odometer && <span className="odometer">Searches/min {rates.left}</span>}
         </div>
-        <div className="timer">{result ? 'KO' : remaining}</div>
+        <div className="timer">
+          {result ? 'KO' : remaining}
+          {totals?.metric && <div className="metric-badge">{totals.metric.toUpperCase()}</div>}
+        </div>
         <div className="nameplate nameplate--right">
           <strong>{right.name}</strong>
           <span>Mentions: {animatedRight}</span>

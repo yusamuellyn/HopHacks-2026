@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.68.0"
+  }
+}

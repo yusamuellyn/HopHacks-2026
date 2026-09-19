@@ -24,6 +24,8 @@ class BattleRequest(BaseModel):
     leftId: str
     rightId: str
 
+    
+
 def get_conn():
     return psycopg2.connect(
         host=os.environ["TIGER_HOST"],

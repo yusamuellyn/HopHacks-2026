@@ -12,6 +12,7 @@ export const MEMES = [
     color: '#f4c430',
     accent: '#7c2d12',
     sigil: 'drum',
+    categories: ['modern', 'creature'],
   },
   {
     id: 'skibidi-toilet',
@@ -25,6 +26,7 @@ export const MEMES = [
     color: '#5eead4',
     accent: '#134e4a',
     sigil: 'toilet',
+    categories: ['modern', 'object'],
   },
   {
     id: 'ohio',
@@ -38,6 +40,7 @@ export const MEMES = [
     color: '#fb7185',
     accent: '#9f1239',
     sigil: 'ohio',
+    categories: ['modern', 'slang'],
   },
   {
     id: 'sixty-seven',
@@ -51,6 +54,7 @@ export const MEMES = [
     color: '#a3e635',
     accent: '#3f6212',
     sigil: '67',
+    categories: ['modern', 'slang'],
   },
   {
     id: 'tralalero-tralala',
@@ -64,6 +68,7 @@ export const MEMES = [
     color: '#38bdf8',
     accent: '#0c4a6e',
     sigil: 'shark',
+    categories: ['modern', 'animal'],
   },
   {
     id: 'bombardino-crocodilo',
@@ -77,6 +82,7 @@ export const MEMES = [
     color: '#86efac',
     accent: '#14532d',
     sigil: 'croc',
+    categories: ['modern', 'animal'],
   },
   {
     id: 'labubu',
@@ -90,6 +96,7 @@ export const MEMES = [
     color: '#f9a8d4',
     accent: '#9d174d',
     sigil: 'labubu',
+    categories: ['modern', 'creature'],
   },
   {
     id: 'chill-guy',
@@ -103,6 +110,7 @@ export const MEMES = [
     color: '#94a3b8',
     accent: '#334155',
     sigil: 'chill',
+    categories: ['modern', 'animal'],
   },
   {
     id: 'rizz',
@@ -116,6 +124,7 @@ export const MEMES = [
     color: '#c084fc',
     accent: '#6b21a8',
     sigil: 'rizz',
+    categories: ['modern', 'slang'],
   },
   {
     id: 'sigma',
@@ -129,6 +138,7 @@ export const MEMES = [
     color: '#e5e7eb',
     accent: '#111827',
     sigil: 'sigma',
+    categories: ['modern', 'slang'],
   },
   {
     id: 'gyatt',
@@ -142,6 +152,7 @@ export const MEMES = [
     color: '#fb923c',
     accent: '#9a3412',
     sigil: 'gyatt',
+    categories: ['modern', 'slang'],
   },
   {
     id: 'fanum-tax',
@@ -155,6 +166,7 @@ export const MEMES = [
     color: '#facc15',
     accent: '#854d0e',
     sigil: 'tax',
+    categories: ['modern', 'food'],
   },
   {
     id: 'very-demure',
@@ -168,6 +180,7 @@ export const MEMES = [
     color: '#fda4af',
     accent: '#881337',
     sigil: 'demure',
+    categories: ['modern', 'slang'],
   },
   {
     id: 'brat',
@@ -181,6 +194,7 @@ export const MEMES = [
     color: '#c6ff4a',
     accent: '#365314',
     sigil: 'brat',
+    categories: ['modern', 'music'],
   },
 
   // --- Added Memes ---
@@ -196,6 +210,7 @@ export const MEMES = [
     color: '#fef08a',
     accent: '#713f12',
     sigil: 'spit',
+    categories: ['modern', 'person'],
   },
   {
     id: 'mewing',
@@ -209,6 +224,7 @@ export const MEMES = [
     color: '#e2e8f0',
     accent: '#1e293b',
     sigil: 'jaw',
+    categories: ['modern', 'slang'],
   },
   {
     id: 'crawly-gnome',
@@ -222,6 +238,7 @@ export const MEMES = [
     color: '#4ade80',
     accent: '#14532d',
     sigil: 'gnome',
+    categories: ['modern', 'creature'],
   },
   {
     id: 'john-pork',
@@ -235,6 +252,7 @@ export const MEMES = [
     color: '#fbcfe8',
     accent: '#831843',
     sigil: 'phone',
+    categories: ['modern', 'animal'],
   },
   {
     id: 'english-or-spanish',
@@ -248,6 +266,7 @@ export const MEMES = [
     color: '#fde047',
     accent: '#713f12',
     sigil: 'statue',
+    categories: ['modern', 'slang'],
   },
   {
     id: 'caseoh',
@@ -261,6 +280,7 @@ export const MEMES = [
     color: '#fdba74',
     accent: '#7c2d12',
     sigil: 'scale',
+    categories: ['modern', 'person'],
   },
   {
     id: 'smurf-cat',
@@ -274,6 +294,7 @@ export const MEMES = [
     color: '#60a5fa',
     accent: '#1e3a8a',
     sigil: 'mushroom',
+    categories: ['modern', 'animal'],
   },
   {
     id: 'pedro-raccoon',
@@ -287,6 +308,7 @@ export const MEMES = [
     color: '#fbbf24',
     accent: '#78350f',
     sigil: 'raccoon',
+    categories: ['modern', 'animal'],
   },
   {
     id: 'costco-guys',
@@ -300,6 +322,7 @@ export const MEMES = [
     color: '#ef4444',
     accent: '#7f1d1d',
     sigil: 'cookie',
+    categories: ['modern', 'food'],
   },
   {
     id: 'sad-hamster',
@@ -313,6 +336,7 @@ export const MEMES = [
     color: '#fed7aa',
     accent: '#7c2d12',
     sigil: 'hamster',
+    categories: ['modern', 'animal'],
   },
   {
     id: 'aura-points',
@@ -326,6 +350,7 @@ export const MEMES = [
     color: '#c084fc',
     accent: '#581c87',
     sigil: 'aura',
+    categories: ['modern', 'slang'],
   },
   {
     id: 'low-taper-fade',
@@ -339,6 +364,247 @@ export const MEMES = [
     color: '#38bdf8',
     accent: '#0c4a6e',
     sigil: 'fade',
+    categories: ['modern', 'music'],
+  },
+
+  // --- Classic / Older Memes ---
+  {
+    id: 'fresh-avocado',
+    name: 'Fr-e-sh Avacado',
+    aliases: ['fresh avocado', 'annoying orange avocado', 'fr e sh avaca do'],
+    age: '2010',
+    origin: 'Annoying Orange / YouTube',
+    description:
+      'A shrieking piece of produce that spells everything out one letter at a time. Ancient, but the ringtone still triggers PTSD.',
+    yesterdayPopularity: 12,
+    color: '#84cc16',
+    accent: '#365314',
+    sigil: 'avocado',
+    categories: ['old', 'food'],
+  },
+  {
+    id: 'jones-bbq',
+    name: 'Jones BBQ and Foot Massage',
+    aliases: ['jones bbq', 'foot massage', 'we got bbq we got foot massage'],
+    age: '2011',
+    origin: 'Local news broadcast meme',
+    description:
+      'A single unforgettable local-news soundbite. Small business, unlimited legendary status.',
+    yesterdayPopularity: 8,
+    color: '#f97316',
+    accent: '#7c2d12',
+    sigil: 'bbq',
+    categories: ['old', 'food'],
+  },
+  {
+    id: 'rickroll',
+    name: 'Rickroll',
+    aliases: ['never gonna give you up', 'rick astley'],
+    age: '2007',
+    origin: 'Bait-and-switch link prank',
+    description:
+      'The original never-dying bait link. Almost two decades in and it still lands the surprise attack.',
+    yesterdayPopularity: 55,
+    color: '#facc15',
+    accent: '#713f12',
+    sigil: 'rick',
+    categories: ['old', 'person'],
+  },
+  {
+    id: 'nyan-cat',
+    name: 'Nyan Cat',
+    aliases: ['pop tart cat', 'rainbow cat'],
+    age: '2011',
+    origin: 'YouTube / Flash animation',
+    description:
+      'Pop-tart body, rainbow contrail, infinite loop energy. Still flies through the timeline on nostalgia alone.',
+    yesterdayPopularity: 20,
+    color: '#f472b6',
+    accent: '#831843',
+    sigil: 'rainbow',
+    categories: ['old', 'animal'],
+  },
+  {
+    id: 'trollface',
+    name: 'Trollface',
+    aliases: ['troll face', 'problem?'],
+    age: '2008',
+    origin: 'Rage comics / deviantART',
+    description:
+      'The original meme-face, drawn in MS Paint and never bested. Pure smug damage, no defense needed.',
+    yesterdayPopularity: 15,
+    color: '#e5e7eb',
+    accent: '#374151',
+    sigil: 'trollface',
+    categories: ['old', 'person'],
+  },
+  {
+    id: 'doge',
+    name: 'Doge',
+    aliases: ['much wow', 'such meme', 'shiba doge'],
+    age: '2013',
+    origin: 'Shiba Inu photo / broken-English captions',
+    description:
+      'Much fight, very battle, wow. The Shiba that briefly ran a cryptocurrency and never stopped grinning.',
+    yesterdayPopularity: 34,
+    color: '#fbbf24',
+    accent: '#78350f',
+    sigil: 'shiba',
+    categories: ['old', 'animal'],
+  },
+  {
+    id: 'pepe-the-frog',
+    name: 'Pepe the Frog',
+    aliases: ['feels good man', 'sad pepe'],
+    age: '2008',
+    origin: 'Matt Furie comic / forum culture',
+    description:
+      'A comic-book frog that mutated into the internet\u2019s all-purpose reaction face. Ancient, endlessly reposted.',
+    yesterdayPopularity: 22,
+    color: '#4ade80',
+    accent: '#14532d',
+    sigil: 'frog',
+    categories: ['old', 'animal'],
+  },
+  {
+    id: 'keyboard-cat',
+    name: 'Keyboard Cat',
+    aliases: ['play him off', 'keyboard cat meme'],
+    age: '2007',
+    origin: 'YouTube viral video',
+    description:
+      'Plays the timeline off whenever something goes wrong. Retro, reliable, always on beat.',
+    yesterdayPopularity: 10,
+    color: '#facc15',
+    accent: '#713f12',
+    sigil: 'keyboard',
+    categories: ['old', 'animal'],
+  },
+  {
+    id: 'grumpy-cat',
+    name: 'Grumpy Cat',
+    aliases: ['tardar sauce', 'no meme'],
+    age: '2012',
+    origin: 'Reddit / viral cat photo',
+    description:
+      'Permanently unimpressed feline face slapped on every possible caption. Low enthusiasm, high staying power.',
+    yesterdayPopularity: 18,
+    color: '#a3a3a3',
+    accent: '#262626',
+    sigil: 'cat',
+    categories: ['old', 'animal'],
+  },
+  {
+    id: 'harlem-shake',
+    name: 'Harlem Shake',
+    aliases: ['harlem shake meme', 'do the harlem shake'],
+    age: '2013',
+    origin: 'Bauuer song / viral video trend',
+    description:
+      'Fifteen seconds of chaos that took over every classroom and office in 2013. Explosive but very short-lived.',
+    yesterdayPopularity: 14,
+    color: '#f97316',
+    accent: '#7c2d12',
+    sigil: 'dance',
+    categories: ['old', 'music'],
+  },
+  {
+    id: 'gangnam-style',
+    name: 'Gangnam Style',
+    aliases: ['oppa gangnam style', 'psy horse dance'],
+    age: '2012',
+    origin: 'PSY music video',
+    description:
+      'The horse-dance anthem that broke YouTube\u2019s view counter. Global reach, still gets stuck in your head.',
+    yesterdayPopularity: 25,
+    color: '#facc15',
+    accent: '#78350f',
+    sigil: 'horse',
+    categories: ['old', 'music'],
+  },
+  {
+    id: 'success-kid',
+    name: 'Success Kid',
+    aliases: ['i hate sandcastles kid'],
+    age: '2007',
+    origin: 'Original beach photo / advice-animal meme',
+    description:
+      'Clenched fist, tiny toddler, maximum determination. Fuels every "finally did the thing" post since 2007.',
+    yesterdayPopularity: 16,
+    color: '#fde047',
+    accent: '#713f12',
+    sigil: 'fist',
+    categories: ['old', 'person'],
+  },
+  {
+    id: 'bad-luck-brian',
+    name: 'Bad Luck Brian',
+    aliases: ['bad luck brian meme'],
+    age: '2012',
+    origin: 'Yearbook photo / Reddit',
+    description:
+      'A yearbook photo cursed into permanent misfortune. Every setup ends with him losing.',
+    yesterdayPopularity: 9,
+    color: '#ef4444',
+    accent: '#7f1d1d',
+    sigil: 'sweater',
+    categories: ['old', 'person'],
+  },
+  {
+    id: 'this-is-fine-dog',
+    name: 'This Is Fine',
+    aliases: ['this is fine dog', 'fire room dog'],
+    age: '2013',
+    origin: 'KC Green webcomic',
+    description:
+      'A dog sipping coffee while the room burns around him. The universal reaction to everything being on fire.',
+    yesterdayPopularity: 45,
+    color: '#f97316',
+    accent: '#7c2d12',
+    sigil: 'fire',
+    categories: ['old', 'animal'],
+  },
+  {
+    id: 'distracted-boyfriend',
+    name: 'Distracted Boyfriend',
+    aliases: ['distracted bf', 'guy looking back stock photo'],
+    age: '2017',
+    origin: 'Stock photo turned template',
+    description:
+      'A stock photo that became the internet\u2019s default template for comparing anything to anything.',
+    yesterdayPopularity: 27,
+    color: '#fb7185',
+    accent: '#881337',
+    sigil: 'stockphoto',
+    categories: ['old', 'person'],
+  },
+  {
+    id: 'big-chungus',
+    name: 'Big Chungus',
+    aliases: ['chungus', 'thicc bugs bunny'],
+    age: '2018',
+    origin: 'Bugs Bunny screenshot edit',
+    description:
+      'An oversized Bugs Bunny screenshot that spiraled into a genuine cultural moment. Big, round, unkillable.',
+    yesterdayPopularity: 19,
+    color: '#d4d4d8',
+    accent: '#3f3f46',
+    sigil: 'rabbit',
+    categories: ['old', 'animal'],
+  },
+  {
+    id: 'shooting-stars',
+    name: 'Shooting Stars',
+    aliases: ['bada bum bum bum', 'shooting stars meme'],
+    age: '2018',
+    origin: 'Bag Raiders song / video edit trend',
+    description:
+      'Four notes of cosmic synth that instantly turn any clip into an epic highlight reel.',
+    yesterdayPopularity: 21,
+    color: '#818cf8',
+    accent: '#312e81',
+    sigil: 'star',
+    categories: ['old', 'music'],
   },
 ]
 
@@ -346,7 +612,7 @@ export function searchMemes(query) {
   const q = query.trim().toLowerCase()
   if (!q) return MEMES
   return MEMES.filter((meme) => {
-    const hay = `${meme.name} ${meme.aliases.join(' ')} ${meme.origin}`.toLowerCase()
+    const hay = `${meme.name} ${meme.aliases.join(' ')} ${meme.origin} ${(meme.categories || []).join(' ')}`.toLowerCase()
     return hay.includes(q)
   })
 }

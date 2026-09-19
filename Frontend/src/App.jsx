@@ -19,6 +19,7 @@ function AppShell() {
   const [left, setLeft] = useState(null)
   const [right, setRight] = useState(null)
   const [stats, setStats] = useState(loadStats)
+  const [metric, setMetric] = useState('mentions')
 
   const onBattleEnd = useCallback((result) => {
     setStats((current) =>
@@ -47,7 +48,10 @@ function AppShell() {
             stats={stats}
             onSelectLeft={setLeft}
             onSelectRight={setRight}
-            onStart={() => setScreen('battle')}
+            onStart={(chosenMetric) => {
+              setMetric(chosenMetric || 'mentions')
+              setScreen('battle')
+            }}
           />
         </>
       ) : (
