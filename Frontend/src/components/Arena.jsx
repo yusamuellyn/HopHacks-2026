@@ -7,6 +7,7 @@ import FloatPop, { pickPath, pickShape, Projectile } from './FloatPop.jsx'
 import StageBackdrop from './StageBackdrop.jsx'
 import { useCountUp } from '../lib/useCountUp.js'
 
+
 const EASTER_HP = {
   21: '21 🫡',
   67: 'six seven',
@@ -76,8 +77,23 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
   const leftMood = getMood(left, stats)
   const rightMood = getMood(right, stats)
 
+  const announcedStart = useRef(false)
+
   useEffect(() => {
     ended.current = false
+
+    if (!announcedStart.current) {
+    announcedStart.current = true
+    fetch('http://localhost:8000/api/announce-start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ leftName: left.name, rightName: right.name }),
+    })
+      .then((res) => res.blob())
+      .then((blob) => new Audio(URL.createObjectURL(blob)).play())
+      .catch((err) => console.error('Announcer intro failed', err))
+  }
+  
     const stop = startBattle({
       left,
       right,
@@ -167,6 +183,18 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
         setFrame(finalResult)
         setResult(finalResult)
         onBattleEnd(finalResult)
+
+        fetch('http://localhost:8000/api/announce-winner', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            winnerName: finalResult.winner.name,
+            pct: Math.round(finalResult.winnerShare),
+          }),
+        })
+          .then((res) => res.blob())
+          .then((blob) => new Audio(URL.createObjectURL(blob)).play())
+          .catch((err) => console.error('Winner announcement failed', err))
       },
     })
     return () => {
