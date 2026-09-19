@@ -1,5 +1,3 @@
-import { getStats, saveBattleRecord } from './api.js'
-
 const STORAGE_KEY = 'meme-arena-stats-v2'
 
 function todayKey() {
@@ -60,20 +58,28 @@ export function loadStats() {
 }
 
 export async function fetchStats() {
-  const stats = await getStats()
+  const res = await fetch('/api/stats')
+  if (!res.ok) throw new Error('Failed to load records')
+  const stats = await res.json()
   cacheStats(stats)
   return stats
 }
 
 export async function recordBattle(result) {
-  const stats = await saveBattleRecord({
-    leftId: result.leftId,
-    rightId: result.rightId,
-    winnerId: result.winnerId,
-    leftTotal: result.leftTotal,
-    rightTotal: result.rightTotal,
-    winnerShare: result.winnerShare,
+  const res = await fetch('/api/record-battle', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      leftId: result.leftId,
+      rightId: result.rightId,
+      winnerId: result.winnerId,
+      leftTotal: result.leftTotal,
+      rightTotal: result.rightTotal,
+      winnerShare: result.winnerShare,
+    }),
   })
+  if (!res.ok) throw new Error('Failed to save battle')
+  const stats = await res.json()
   cacheStats(stats)
   return stats
 }
