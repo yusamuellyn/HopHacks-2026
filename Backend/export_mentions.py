@@ -1,6 +1,6 @@
 import os
 import sys
-import csv
+import json
 import psycopg2
 from dotenv import load_dotenv
 from search_terms import MEME_SEARCH_TERMS
@@ -18,41 +18,35 @@ def get_conn():
     )
 
 def main(left_id, right_id):
-    left_terms = MEME_SEARCH_TERMS.get(left_id)
-    right_terms = MEME_SEARCH_TERMS.get(right_id)
-
-    if not left_terms or not right_terms:
+    if left_id not in MEME_SEARCH_TERMS or right_id not in MEME_SEARCH_TERMS:
         raise ValueError(f"Unknown meme id(s): {left_id}, {right_id}")
 
     conn = get_conn()
     cur = conn.cursor()
 
-    # Reads the precomputed meme_mentions table (see build_mentions.py)
-    # instead of ILIKE-scanning the full tweets table.
-    query = """
-        SELECT
-            tweet_id,
-            body AS text,
-            created_at AS ts,
-            meme_id
+    cur.execute("""
+        SELECT meme_id, count(*)
         FROM meme_mentions
         WHERE meme_id IN (%s, %s)
-        ORDER BY created_at
-    """
+        GROUP BY meme_id
+    """, [left_id, right_id])
 
-    cur.execute(query, [left_id, right_id])
-    rows = cur.fetchall()
-
-    out_path = f"mentions_{left_id}_vs_{right_id}.csv"
-    with open(out_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(["tweet_id", "text", "ts", "meme_id"])
-        writer.writerows(rows)
-
-    print(f"Wrote {len(rows)} rows to {out_path}")
-
+    counts = dict(cur.fetchall())
     cur.close()
     conn.close()
+
+    result = {
+        "leftId": left_id,
+        "rightId": right_id,
+        "leftTotal": counts.get(left_id, 0),
+        "rightTotal": counts.get(right_id, 0),
+    }
+
+    out_path = f"mentions_{left_id}_vs_{right_id}.json"
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(result, f, indent=2)
+
+    print(f"Wrote totals to {out_path}: {result}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:

@@ -5,6 +5,7 @@ import { getMood } from './FighterSlot.jsx'
 import FighterPortrait, { memeGlyph } from './FighterPortrait.jsx'
 import FloatPop, { pickPath, pickShape, Projectile } from './FloatPop.jsx'
 import StageBackdrop from './StageBackdrop.jsx'
+import { useCountUp } from '../lib/useCountUp.js'
 
 const EASTER_HP = {
   21: '21 🫡',
@@ -62,6 +63,7 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
   const [rates, setRates] = useState({ left: 0, right: 0 })
   const [shot, setShot] = useState(null)
   const [throwSide, setThrowSide] = useState(null)
+  const [totals, setTotals] = useState(null)
   const seenEaster = useRef(new Set())
   const ended = useRef(false)
   const feedRef = useRef(null)
@@ -178,15 +180,19 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
   }, [feed])
 
   useEffect(() => {
+    setTotals(null)
     fetch('http://localhost:8000/api/battle', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ leftId: left.id, rightId: right.id }),
     })
       .then((res) => res.json())
-      .then((data) => console.log('Backend received picks:', data))
-      .catch((err) => console.error('Failed to send picks', err))
+      .then(setTotals)
+      .catch((err) => console.error('Failed to fetch totals', err))
   }, [left, right])
+
+  const animatedLeft = useCountUp(totals?.leftTotal, 6000)
+  const animatedRight = useCountUp(totals?.rightTotal, 6000)
 
   const leftShare = frame?.left.share ?? 50
   const rightShare = frame?.right.share ?? 50
@@ -231,13 +237,13 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
       <div className="arena__hud">
         <div className="nameplate nameplate--left">
           <strong>{left.name}</strong>
-          <span>Mentions: {frame?.left.mentions ?? 0}</span>
+          <span>Mentions: {animatedLeft}</span>
           {fx.odometer && <span className="odometer">Searches/min {rates.left}</span>}
         </div>
         <div className="timer">{result ? 'KO' : remaining}</div>
         <div className="nameplate nameplate--right">
           <strong>{right.name}</strong>
-          <span>Mentions: {frame?.right.mentions ?? 0}</span>
+          <span>Mentions: {animatedRight}</span>
           {fx.odometer && <span className="odometer">Searches/min {rates.right}</span>}
         </div>
       </div>
