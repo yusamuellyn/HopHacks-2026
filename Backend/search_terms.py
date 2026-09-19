@@ -28,4 +28,24 @@ MEME_SEARCH_TERMS = {
     "sad-hamster": ["sad hamster", "wamp wamp hamster"],
     "aura-points": ["aura points", "plus aura", "minus aura"],
     "low-taper-fade": ["low taper fade", "ninja low taper fade"],
+
+   
+    # ...existing entries...
+    "fresh-avocado": ["fresh avocado", "annoying orange avocado"],
+    "jones-bbq": ["jones bbq", "foot massage"],
+    "rickroll": ["rickroll", "never gonna give you up", "rick astley"],
+    "nyan-cat": ["nyan cat"],
+    "trollface": ["trollface", "troll face"],
+    "doge": ["doge", "such meme", "much wow"],
+    "pepe-the-frog": ["pepe the frog", "feels good man"],
+    "keyboard-cat": ["keyboard cat"],
+    "grumpy-cat": ["grumpy cat", "tardar sauce"],
+    "harlem-shake": ["harlem shake"],
+    "gangnam-style": ["gangnam style"],
+    "success-kid": ["success kid"],
+    "bad-luck-brian": ["bad luck brian"],
+    "this-is-fine-dog": ["this is fine"],
+    "distracted-boyfriend": ["distracted boyfriend"],
+    "big-chungus": ["big chungus", "chungus"],
+    "shooting-stars": ["shooting stars", "bada bum bum bum"],
 }

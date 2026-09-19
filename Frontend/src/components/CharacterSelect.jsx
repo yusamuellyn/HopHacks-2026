@@ -1,6 +1,13 @@
 import FighterSlot from './FighterSlot.jsx'
 import MemeSearch from './MemeSearch.jsx'
 
+
+const METRICS = ['mentions', 'likes', 'retweets', 'views', 'replies']
+
+function pickRandomMetric() {
+  return METRICS[Math.floor(Math.random() * METRICS.length)]
+}
+
 export default function CharacterSelect({ left, right, stats, onSelectLeft, onSelectRight, onStart }) {
   const ready = Boolean(left && right)
 
@@ -41,6 +48,7 @@ export default function CharacterSelect({ left, right, stats, onSelectLeft, onSe
         />
       </div>
 
+      
       <button type="button" className="start-btn" disabled={!ready} onClick={onStart}>
         {ready ? 'START BATTLE' : 'PICK TWO FIGHTERS'}
       </button>
