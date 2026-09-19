@@ -11,9 +11,9 @@ export function emptyStats() {
     fighters: {},
     lastChampionId: null,
     daily: { date: todayKey(), wins: {}, battles: 0 },
-    window: { yesterday: null, latest: null },
+    window: { lastMonth: null, latest: null },
     recent: [],
-    maxYesterday: 0,
+    maxLastMonth: 0,
   }
 }
 
@@ -29,6 +29,16 @@ export function formatDay(iso) {
   return new Date(year, month - 1, day).toLocaleDateString(undefined, {
     month: 'short',
     day: 'numeric',
+  })
+}
+
+export function formatMonth(iso) {
+  if (!iso) return null
+  const [year, month] = iso.split('-').map(Number)
+  if (!year || !month) return iso
+  return new Date(year, month - 1, 1).toLocaleDateString(undefined, {
+    month: 'long',
+    year: 'numeric',
   })
 }
 
@@ -85,16 +95,27 @@ export async function recordBattle(result) {
 }
 
 export function getFighterRecord(stats, memeId) {
-  return (
-    stats.fighters?.[memeId] ?? {
+  const record = stats.fighters?.[memeId]
+  if (!record) {
+    return {
       wins: 0,
       losses: 0,
       lastShare: null,
-      yesterdayMentions: 0,
+      lastMonthMentions: 0,
       latestMentions: 0,
       totalMentions: 0,
     }
-  )
+  }
+  return {
+    ...record,
+    lastMonthMentions: record.lastMonthMentions ?? record.yesterdayMentions ?? 0,
+  }
+}
+
+export function isDeadMeme(stats, memeId) {
+  const record = stats?.fighters?.[memeId]
+  if (!record) return false
+  return Number(record.lastMonthMentions ?? record.yesterdayMentions ?? 0) <= 0
 }
 
 export function getDailyLeaderboard(stats, roster) {
@@ -108,7 +129,7 @@ export function getDailyLeaderboard(stats, roster) {
         dayWins: dailyWins[meme.id] || 0,
         wins: record.wins || 0,
         losses: record.losses || 0,
-        yesterdayMentions: record.yesterdayMentions || 0,
+        lastMonthMentions: record.lastMonthMentions ?? record.yesterdayMentions ?? 0,
         totalMentions: record.totalMentions || 0,
       }
     })
@@ -116,7 +137,7 @@ export function getDailyLeaderboard(stats, roster) {
       (a, b) =>
         b.dayWins - a.dayWins ||
         b.wins - a.wins ||
-        b.yesterdayMentions - a.yesterdayMentions ||
+        b.lastMonthMentions - a.lastMonthMentions ||
         b.totalMentions - a.totalMentions,
     )
     .filter((row) => row.dayWins > 0 || row.wins > 0 || row.losses > 0)

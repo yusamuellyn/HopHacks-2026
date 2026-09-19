@@ -3,7 +3,6 @@ import { createContext, useContext, useMemo, useState } from 'react'
 export const FX_OPTIONS = [
   { id: 'combo', label: 'Combo pops' },
   { id: 'rain', label: 'Meme rain' },
-  { id: 'odometer', label: 'Search odometer' },
 ]
 
 const DEFAULTS = Object.fromEntries(FX_OPTIONS.map((item) => [item.id, true]))

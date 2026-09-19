@@ -3,9 +3,9 @@ import { formatCount, getFighterRecord } from '../lib/stats.js'
 
 export function getMood(meme, stats) {
   const record = getFighterRecord(stats, meme.id)
-  const yday = record.yesterdayMentions || 0
-  const maxYesterday = Math.max(1, stats.maxYesterday || 0)
-  const heat = Math.min(100, (Math.log1p(yday) / Math.log1p(maxYesterday)) * 100)
+  const lastMonth = record.lastMonthMentions || 0
+  const maxLastMonth = Math.max(1, stats.maxLastMonth || stats.maxYesterday || 0)
+  const heat = Math.min(100, (Math.log1p(lastMonth) / Math.log1p(maxLastMonth)) * 100)
   const popularity = heat + (record.wins ?? 0) * 8 - (record.losses ?? 0) * 5
   const isChamp = stats.lastChampionId === meme.id || popularity >= 80
   if (isChamp && popularity >= 70) return 'champion'
@@ -43,7 +43,7 @@ export default function FighterSlot({ meme, stats, side, emptyLabel }) {
       <dl className="slot__stats">
         <div>
           <dt>Yesterday</dt>
-          <dd>{formatCount(record.yesterdayMentions)}</dd>
+          <dd>{formatCount(record.lastMonthMentions)}</dd>
         </div>
         <div>
           <dt>W / L</dt>

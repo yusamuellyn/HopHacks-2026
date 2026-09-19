@@ -159,9 +159,8 @@ function Dossier({ meme, won }) {
 
 function HighlightsPage({ recap, left, right, result, totals }) {
   const rows = [
-    { label: 'Yesterday', left: totals?.leftYesterday ?? 0, right: totals?.rightYesterday ?? 0 },
+    { label: 'Yesterday', left: totals?.leftLastMonth ?? result.left.mentions, right: totals?.rightLastMonth ?? result.right.mentions },
     { label: 'Latest day', left: totals?.leftLatest ?? 0, right: totals?.rightLatest ?? 0 },
-    { label: 'All posts', left: result.left.mentions, right: result.right.mentions },
   ]
   return (
     <div className="recap-highlights">
@@ -287,11 +286,11 @@ function buildRecap(left, right, result, totals, maxCombos, stats) {
   const loserMentions = result.winnerSide === 'left' ? result.right.mentions : result.left.mentions
   const winnerCombo = maxCombos?.[result.winnerSide] || 0
   const winnerRecord = getFighterRecord(stats, result.winner.id)
-  const ydayWinner = result.winnerSide === 'left' ? totals?.leftYesterday : totals?.rightYesterday
-  const ydayLoser = result.winnerSide === 'left' ? totals?.rightYesterday : totals?.leftYesterday
+  const lastMonthWinner = result.winnerSide === 'left' ? totals?.leftLastMonth : totals?.rightLastMonth
+  const lastMonthLoser = result.winnerSide === 'left' ? totals?.rightLastMonth : totals?.leftLastMonth
   const notes = [
     `${result.winner.name} closed it ${formatCount(winnerMentions)}–${formatCount(loserMentions)} on real keyword hits.`,
-    `Yesterday's searches: ${formatCount(ydayWinner)} for ${result.winner.name} vs ${formatCount(ydayLoser)} for ${result.loser.name}.`,
+    `Yesterday's searches: ${formatCount(lastMonthWinner)} for ${result.winner.name} vs ${formatCount(lastMonthLoser)} for ${result.loser.name}.`,
     winnerCombo > 1
       ? `${result.winner.name} stacked a ${winnerCombo}-hit combo before the KO.`
       : `${result.loser.name} never found a real combo. The timeline did not blink.`,
@@ -300,7 +299,7 @@ function buildRecap(left, right, result, totals, maxCombos, stats) {
       : `${result.winner.name} just opened an arena record.`,
   ]
   return {
-    blurb: `${result.winner.name} took the belt with ${roundShare(result.winnerShare)}% of the posts. ${result.loser.name} showed up, then got washed as the mentions piled on.`,
+    blurb: `${result.winner.name} took the belt with ${roundShare(result.winnerShare)}% of yesterday's posts. ${result.loser.name} showed up, then got washed as the mentions piled on.`,
     notes,
   }
 }

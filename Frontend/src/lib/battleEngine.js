@@ -45,7 +45,9 @@ function commentaryFor({ attacker, defender, combo, lead }) {
   return pick(CHASE_LINES)(attacker.name, defender.name)
 }
 
-function pickAttacker(leftPower, rightPower) {
+function pickAttacker(leftPower, rightPower, leftDead, rightDead) {
+  if (leftDead && !rightDead) return 'right'
+  if (rightDead && !leftDead) return 'left'
   const total = leftPower + rightPower
   if (total <= 0) return Math.random() < 0.5 ? 'left' : 'right'
   // Tiny jitter so the underdog still throws, but a big lead owns the animations.
@@ -73,8 +75,8 @@ export function startBattle({
   right,
   leftTotal = 0,
   rightTotal = 0,
-  leftYesterday = 0,
-  rightYesterday = 0,
+  leftLastMonth = 0,
+  rightLastMonth = 0,
   leftLatest = 0,
   rightLatest = 0,
   durationMs = 19000,
@@ -83,8 +85,10 @@ export function startBattle({
   onFinish,
 }) {
   const started = performance.now()
-  const leftPower = Math.max(0.35, leftTotal + leftYesterday * 0.35)
-  const rightPower = Math.max(0.35, rightTotal + rightYesterday * 0.35)
+  const leftDead = leftTotal <= 0
+  const rightDead = rightTotal <= 0
+  const leftPower = leftDead ? 0 : Math.max(0.35, leftTotal + leftLastMonth * 0.35)
+  const rightPower = rightDead ? 0 : Math.max(0.35, rightTotal + rightLastMonth * 0.35)
   const trueShares = sharesFromCounts(leftTotal, rightTotal)
   let lastAttack = started - attackMs + 220
   let lastEmit = 0
@@ -98,6 +102,13 @@ export function startBattle({
   let pulse = 0
 
   const liveShares = (elapsed) => {
+    if (leftDead && !rightDead) return { leftShare: 0, rightShare: 100 }
+    if (rightDead && !leftDead) return { leftShare: 100, rightShare: 0 }
+    if (leftDead && rightDead) {
+      if (momentum >= 100) return { leftShare: 100, rightShare: 0 }
+      if (momentum <= 0) return { leftShare: 0, rightShare: 100 }
+      return { leftShare: 50, rightShare: 50 }
+    }
     const progress = Math.min(1, elapsed / durationMs)
     const settle = settleAmount(progress)
     const mixed = momentum * (1 - settle) + trueShares.leftShare * settle
@@ -117,7 +128,7 @@ export function startBattle({
         mentions: Math.round(leftExact),
         share: shares.leftShare,
         sources: {
-          yesterday: leftYesterday,
+          lastMonth: leftLastMonth,
           latest: leftLatest,
           total: leftTotal,
         },
@@ -126,7 +137,7 @@ export function startBattle({
         mentions: Math.round(rightExact),
         share: shares.rightShare,
         sources: {
-          yesterday: rightYesterday,
+          lastMonth: rightLastMonth,
           latest: rightLatest,
           total: rightTotal,
         },
@@ -135,27 +146,33 @@ export function startBattle({
     }
   }
 
-  const finish = () => {
+  const finish = (winnerSide = leftTotal >= rightTotal ? 'left' : 'right', elapsed = durationMs) => {
     if (finished || cancelled) return
     finished = true
     cancelAnimationFrame(frameId)
-    const shares = trueShares
-    const leftWins = leftTotal >= rightTotal
+    const shares =
+      leftDead || rightDead
+        ? winnerSide === 'left'
+          ? { leftShare: 100, rightShare: 0 }
+          : { leftShare: 0, rightShare: 100 }
+        : trueShares
+    const leftWins = winnerSide === 'left'
     onFinish({
-      ...snapshot(durationMs),
+      ...snapshot(elapsed),
+      remainingMs: 0,
       left: {
         mentions: leftTotal,
         share: shares.leftShare,
-        sources: { yesterday: leftYesterday, latest: leftLatest, total: leftTotal },
+        sources: { lastMonth: leftLastMonth, latest: leftLatest, total: leftTotal },
       },
       right: {
         mentions: rightTotal,
         share: shares.rightShare,
-        sources: { yesterday: rightYesterday, latest: rightLatest, total: rightTotal },
+        sources: { lastMonth: rightLastMonth, latest: rightLatest, total: rightTotal },
       },
       leftId: left.id,
       rightId: right.id,
-      winnerSide: leftWins ? 'left' : 'right',
+      winnerSide,
       winner: leftWins ? left : right,
       loser: leftWins ? right : left,
       winnerShare: leftWins ? shares.leftShare : shares.rightShare,
@@ -172,7 +189,7 @@ export function startBattle({
 
     if (elapsed < durationMs && now - lastAttack >= attackMs) {
       lastAttack = now
-      const side = pickAttacker(leftPower, rightPower)
+      const side = pickAttacker(leftPower, rightPower, leftDead, rightDead)
       combo = lastSide === side ? combo + 1 : 1
       lastSide = side
       const attacker = side === 'left' ? left : right
@@ -180,16 +197,27 @@ export function startBattle({
       const lead = side === 'left' ? leftPower >= rightPower : rightPower >= leftPower
       const attackerPower = side === 'left' ? leftPower : rightPower
       const defenderPower = side === 'left' ? rightPower : leftPower
-      const delta = hitSwing(combo, attackerPower, defenderPower)
+      const defenderDead = side === 'left' ? rightDead : leftDead
+      const delta = defenderDead ? 50 : hitSwing(combo, attackerPower, defenderPower)
       const signed = side === 'left' ? delta : -delta
-      momentum = clamp(momentum + signed, 8, 92)
-      pulse = signed * 0.55
+      momentum = defenderDead ? (side === 'left' ? 100 : 0) : clamp(momentum + signed, 8, 92)
+      pulse = defenderDead ? 0 : signed * 0.55
       event = {
         id: `${Math.round(elapsed)}-${side}-${combo}`,
         side,
         combo,
         delta,
-        text: commentaryFor({ attacker, defender, combo, lead }),
+        ko: defenderDead,
+        text: defenderDead
+          ? `${attacker.name} one-taps ${defender.name}! Dead meme.`
+          : commentaryFor({ attacker, defender, combo, lead }),
+      }
+
+      if (defenderDead) {
+        lastEmit = now
+        onTick(snapshot(elapsed, event))
+        finish(side, elapsed)
+        return
       }
     }
 

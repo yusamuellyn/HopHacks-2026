@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { playAnnouncement, stopAnnouncer } from '../lib/announcer.js'
 import { startBattle } from '../lib/battleEngine.js'
 import { useFx } from '../lib/fx.jsx'
 import { useSfx } from '../lib/sfx.jsx'
 import { setMusicTrack } from '../lib/music.js'
-import { formatCount, formatDay } from '../lib/stats.js'
+import { formatCount, getFighterRecord } from '../lib/stats.js'
 import { getMood } from './FighterSlot.jsx'
 import FighterPortrait, { memeGlyph } from './FighterPortrait.jsx'
 import FloatPop, { pickPath, pickShape, Projectile } from './FloatPop.jsx'
@@ -26,7 +27,7 @@ function fighterMotion(share, side, over = false) {
   const lead = (share - 50) / 50
   const extra = over ? Math.abs(lead) * 0.16 : 0
   const size = Math.max(0.52, 1 + lead * 0.55 + (share >= 50 ? extra : -extra))
-  const lean = lead * 10
+  const lean = over ? lead * 10 : 0
   return {
     '--size': size.toFixed(3),
     '--lean': `${side === 'left' ? lean : -lean}deg`,
@@ -95,7 +96,6 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
   const [maxCombos, setMaxCombos] = useState({ left: 0, right: 0 })
   const particleId = useRef(0)
   const inflight = useRef(false)
-  const announcedStart = useRef(false)
 
   const leftMood = getMood(left, stats)
   const rightMood = getMood(right, stats)
@@ -126,7 +126,17 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
         return res.json()
       })
       .then((data) => {
-        if (!cancelled) setTotals(data)
+        if (cancelled) return
+        const leftRecord = getFighterRecord(stats, left.id)
+        const rightRecord = getFighterRecord(stats, right.id)
+        setTotals({
+          ...data,
+          leftLastMonth: data.leftLastMonth ?? data.leftTotal ?? leftRecord.lastMonthMentions,
+          rightLastMonth: data.rightLastMonth ?? data.rightTotal ?? rightRecord.lastMonthMentions,
+          leftLatest: data.leftLatest ?? leftRecord.latestMentions,
+          rightLatest: data.rightLatest ?? rightRecord.latestMentions,
+          window: data.window ?? stats.window,
+        })
       })
       .catch((err) => {
         console.error('Failed to fetch totals', err)
@@ -141,7 +151,6 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
     if (!totals) return undefined
 
     ended.current = false
-    announcedStart.current = false
     maxCombosRef.current = { left: 0, right: 0 }
     combosRef.current = { left: 0, right: 0 }
     lastSide.current = null
@@ -154,17 +163,17 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
       right: Math.round((totals.rightTotal / (FIGHT_MS / 1000)) * 60),
     })
 
-    if (!announcedStart.current) {
-      announcedStart.current = true
+    const instantKo = totals.leftTotal <= 0 || totals.rightTotal <= 0
+    let winnerTimer = 0
+
+    if (instantKo) {
+      stopAnnouncer()
+    } else {
       sfxRef.current.play('startBell')
-      fetch('/api/announce-start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ leftName: left.name, rightName: right.name }),
-      })
-        .then((res) => res.blob())
-        .then((blob) => new Audio(URL.createObjectURL(blob)).play())
-        .catch((err) => console.error('Announcer intro failed', err))
+      playAnnouncement('/api/announce-start', {
+        leftName: left.name,
+        rightName: right.name,
+      }).catch((err) => console.error('Announcer intro failed', err))
     }
 
     const stop = startBattle({
@@ -172,8 +181,8 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
       right,
       leftTotal: totals.leftTotal,
       rightTotal: totals.rightTotal,
-      leftYesterday: totals.leftYesterday,
-      rightYesterday: totals.rightYesterday,
+      leftLastMonth: totals.leftLastMonth,
+      rightLastMonth: totals.rightLastMonth,
       leftLatest: totals.leftLatest,
       rightLatest: totals.rightLatest,
       durationMs: FIGHT_MS,
@@ -201,7 +210,7 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
           const shape = pickShape()
           const shotId = particleId.current++
           setThrowSide(attacker)
-          window.setTimeout(() => setThrowSide(null), 180)
+          window.setTimeout(() => setThrowSide(null), 360)
           setShot({
             id: shotId,
             from: attacker,
@@ -222,13 +231,13 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
             setShot(null)
             setHit(defender)
             setFlash(defender)
-            sfxRef.current.playImpact(nextCombo)
+            if (!next.event.ko) sfxRef.current.playImpact(nextCombo)
             setComboPops([
               {
                 id: shotId,
                 side: defender,
                 shape,
-                text: nextCombo > 1 ? `${nextCombo} HIT` : '+1',
+                text: next.event.ko ? 'KO' : nextCombo > 1 ? `${nextCombo} HIT` : '+1',
                 x: defender === 'left' ? '16%' : '74%',
                 y: `${30 + Math.random() * 16}%`,
                 rot: Math.round(-18 + Math.random() * 36),
@@ -270,24 +279,27 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
         onBattleEnd(payload)
         sfxRef.current.play('finishFanfare')
 
-        fetch('/api/announce-winner', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        const announceWinner = () =>
+          playAnnouncement('/api/announce-winner', {
             winnerName: finalResult.winner.name,
             pct: Math.round(finalResult.winnerShare),
-          }),
-        })
-          .then((res) => res.blob())
-          .then((blob) => new Audio(URL.createObjectURL(blob)).play())
-          .catch((err) => console.error('Winner announcement failed', err))
+          }).catch((err) => console.error('Winner announcement failed', err))
+
+        if (instantKo) {
+          winnerTimer = window.setTimeout(announceWinner, 720)
+        } else {
+          announceWinner()
+        }
       },
     })
     return () => {
       inflight.current = false
+      window.clearTimeout(winnerTimer)
       stop()
     }
   }, [left, right, totals, onBattleEnd])
+
+  useEffect(() => () => stopAnnouncer(), [])
 
   useEffect(() => {
     feedRef.current?.scrollTo({ top: 0 })
@@ -305,15 +317,15 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
       return
     }
     if (!totals) return
+    if (totals.leftTotal <= 0 || totals.rightTotal <= 0) return
     setMusicTrack(remaining <= 5 ? 'battleClimax' : 'battle')
   }, [remaining, result, totals])
 
   const breakdown = useMemo(() => {
     if (!totals) return []
     return [
-      { source: 'Yesterday', left: totals.leftYesterday, right: totals.rightYesterday },
+      { source: 'Yesterday', left: totals.leftLastMonth, right: totals.rightLastMonth },
       { source: 'Latest day', left: totals.leftLatest, right: totals.rightLatest },
-      { source: 'All posts', left: totals.leftTotal, right: totals.rightTotal },
     ]
   }, [totals])
 
@@ -348,7 +360,6 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
         <div className="nameplate nameplate--left">
           <strong>{left.name}</strong>
           <span>Mentions: {formatCount(leftMentions)}</span>
-          {fx.odometer && <span className="odometer">Yday {formatCount(totals?.leftYesterday)}</span>}
         </div>
         <div className="timer">
           {loadError ? '??' : result ? 'KO' : totals ? remaining : '...'}
@@ -356,7 +367,6 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
         <div className="nameplate nameplate--right">
           <strong>{right.name}</strong>
           <span>Mentions: {formatCount(rightMentions)}</span>
-          {fx.odometer && <span className="odometer">Yday {formatCount(totals?.rightYesterday)}</span>}
         </div>
       </div>
 
@@ -415,7 +425,7 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
         <div className="ticker" ref={feedRef}>
           <h3>Fight commentary</h3>
           {loadError && <p className="ticker__line">{loadError}</p>}
-          {!loadError && !totals && <p className="ticker__line">Pulling live mention counts from the timeline...</p>}
+          {!loadError && !totals && <p className="ticker__line">Searching yesterday's mentions...</p>}
           {feed.map((line) => (
             <p key={line.id} className={`ticker__line ticker__line--${line.side}`}>
               {line.text}
@@ -429,7 +439,7 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
         <section className="breakdown">
           <h3>Search pressure</h3>
           <p className="breakdown__window">
-            {formatDay(totals?.window?.yesterday) || 'Yesterday'} vs {formatDay(totals?.window?.latest) || 'latest day'}
+            Yesterday vs latest day
           </p>
           <ul>
             {breakdown.map((row) => (

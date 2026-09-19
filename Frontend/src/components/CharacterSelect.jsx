@@ -4,7 +4,7 @@ import { formatDay } from '../lib/stats.js'
 
 export default function CharacterSelect({ left, right, stats, onSelectLeft, onSelectRight, onStart }) {
   const ready = Boolean(left && right)
-  const yesterday = formatDay(stats?.window?.yesterday)
+  const yesterday = formatDay(stats?.window?.latest)
 
   return (
     <div className="select-screen">
@@ -35,6 +35,7 @@ export default function CharacterSelect({ left, right, stats, onSelectLeft, onSe
           label="Choose Fighter 1"
           value={left}
           excludeId={right?.id}
+          stats={stats}
           onSelect={onSelectLeft}
         />
         <MemeSearch
@@ -42,6 +43,7 @@ export default function CharacterSelect({ left, right, stats, onSelectLeft, onSe
           label="Choose Fighter 2"
           value={right}
           excludeId={left?.id}
+          stats={stats}
           onSelect={onSelectRight}
         />
       </div>
