@@ -1,16 +1,10 @@
 import { useMemo, useState } from 'react'
 import { MEMES, memeDossier } from '../data/memes.js'
-import { getDailyLeaderboard } from '../lib/stats.js'
+import { formatCount, getDailyLeaderboard, getFighterRecord } from '../lib/stats.js'
 import FighterPortrait from './FighterPortrait.jsx'
 import { useSfx } from '../lib/sfx.jsx'
 
 const PAGES = ['scouting', 'highlights', 'leaderboard']
-const SOURCE_LABELS = {
-  reddit: 'Reddit',
-  x: 'X',
-  tiktok: 'TikTok',
-  news: 'News',
-}
 
 function roundShare(n) {
   return Math.round(n)
@@ -30,7 +24,10 @@ export default function BattleRecap({
   const sfx = useSfx()
   const pageId = PAGES[page]
   const board = useMemo(() => getDailyLeaderboard(stats, MEMES), [stats])
-  const recap = useMemo(() => buildRecap(left, right, result, totals, maxCombos), [left, right, result, totals, maxCombos])
+  const recap = useMemo(
+    () => buildRecap(left, right, result, totals, maxCombos, stats),
+    [left, right, result, totals, maxCombos, stats],
+  )
 
   return (
     <div className="recap">
@@ -42,8 +39,8 @@ export default function BattleRecap({
         <p className="recap__sub">{roundShare(result.winnerShare)}% meme dominance</p>
 
         {pageId === 'scouting' && <ScoutPage left={left} right={right} winnerId={result.winner.id} />}
-        {pageId === 'highlights' && <HighlightsPage recap={recap} left={left} right={right} result={result} />}
-        {pageId === 'leaderboard' && <LeaderboardPage board={board} winnerId={result.winner.id} />}
+        {pageId === 'highlights' && <HighlightsPage recap={recap} left={left} right={right} result={result} totals={totals} />}
+        {pageId === 'leaderboard' && <LeaderboardPage board={board} winnerId={result.winner.id} stats={stats} />}
 
         <div className="recap__nav">
           <button
@@ -160,8 +157,12 @@ function Dossier({ meme, won }) {
   )
 }
 
-function HighlightsPage({ recap, left, right, result }) {
-  const sources = ['reddit', 'x', 'tiktok', 'news']
+function HighlightsPage({ recap, left, right, result, totals }) {
+  const rows = [
+    { label: 'Yesterday', left: totals?.leftYesterday ?? 0, right: totals?.rightYesterday ?? 0 },
+    { label: 'Latest day', left: totals?.leftLatest ?? 0, right: totals?.rightLatest ?? 0 },
+    { label: 'All posts', left: result.left.mentions, right: result.right.mentions },
+  ]
   return (
     <div className="recap-highlights">
       <h3>Match highlights</h3>
@@ -172,8 +173,8 @@ function HighlightsPage({ recap, left, right, result }) {
           <FighterPortrait meme={left} mood="contender" state="idle" bare />
           <div className="recap-score__meta">
             <strong>{left.name}</strong>
-            <b>{result.left.mentions}</b>
-            <span>scored mentions</span>
+            <b>{formatCount(result.left.mentions)}</b>
+            <span>keyword hits</span>
           </div>
         </div>
         <span className="recap-score__vs">VS</span>
@@ -182,31 +183,23 @@ function HighlightsPage({ recap, left, right, result }) {
           <FighterPortrait meme={right} mood="contender" state="idle" bare />
           <div className="recap-score__meta">
             <strong>{right.name}</strong>
-            <b>{result.right.mentions}</b>
-            <span>scored mentions</span>
+            <b>{formatCount(result.right.mentions)}</b>
+            <span>keyword hits</span>
           </div>
         </div>
       </div>
-      {recap.liveTotals && (
-        <p className="recap-live">
-          Live scrape this window: {recap.liveTotals.left} vs {recap.liveTotals.right} raw mentions
-          {recap.liveTotals.metric ? ` · metric ${recap.liveTotals.metric}` : ''}.
-        </p>
-      )}
-      <h4>Searches by site</h4>
+      <h4>When they were found</h4>
       <ul className="recap-sources">
-        {sources.map((source) => {
-          const l = result.left.sources[source] || 0
-          const r = result.right.sources[source] || 0
-          const total = l + r || 1
+        {rows.map((row) => {
+          const total = row.left + row.right || 1
           return (
-            <li key={source}>
-              <span>{SOURCE_LABELS[source]}</span>
-              <div className="recap-bar" style={{ '--left': `${(l / total) * 100}%` }}>
+            <li key={row.label}>
+              <span>{row.label}</span>
+              <div className="recap-bar" style={{ '--left': `${(row.left / total) * 100}%` }}>
                 <i />
               </div>
               <em>
-                {l}–{r}
+                {formatCount(row.left)}–{formatCount(row.right)}
               </em>
             </li>
           )
@@ -221,17 +214,23 @@ function HighlightsPage({ recap, left, right, result }) {
   )
 }
 
-function LeaderboardPage({ board, winnerId }) {
+function LeaderboardPage({ board, winnerId, stats }) {
   const today = new Date().toLocaleDateString(undefined, {
     weekday: 'long',
     month: 'short',
     day: 'numeric',
   })
+  const recent = stats.recent || []
   return (
     <div className="recap-board">
-      <h3>Today&apos;s leaderboard</h3>
-      <p className="recap-board__date">{today} · ranked by wins today</p>
+      <h3>Arena record</h3>
+      <p className="recap-board__date">
+        {today} · {stats.battles || 0} tracked fight{stats.battles === 1 ? '' : 's'}
+      </p>
       <ol className="recap-board__grid">
+        {board.length === 0 && (
+          <li className="recap-board__empty">No saved fights yet. This one just got logged.</li>
+        )}
         {board.map((row, index) => {
           const place = index + 1
           const podium = place === 1 ? 'gold' : place === 2 ? 'silver' : place === 3 ? 'bronze' : ''
@@ -245,14 +244,30 @@ function LeaderboardPage({ board, winnerId }) {
               <strong className="recap-board__name">{row.name}</strong>
               <span className="recap-board__stat">{row.dayWins} today</span>
               <span className="recap-board__stat recap-board__stat--muted">
-                {row.wins}-{row.losses} all-time
+                {row.wins}-{row.losses} record
               </span>
             </li>
           )
         })}
       </ol>
+      {recent.length > 0 && (
+        <div className="recap-history">
+          <h4>Recent fights</h4>
+          <ul>
+            {recent.slice(0, 6).map((fight) => (
+              <li key={fight.id}>
+                {nameFor(fight.leftId)} vs {nameFor(fight.rightId)} · {nameFor(fight.winnerId)} won {roundShare(fight.winnerShare)}%
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
+}
+
+function nameFor(id) {
+  return MEMES.find((meme) => meme.id === id)?.name || id
 }
 
 function PlacePlaque({ place }) {
@@ -267,27 +282,25 @@ function PlacePlaque({ place }) {
   )
 }
 
-function buildRecap(left, right, result, totals, maxCombos) {
+function buildRecap(left, right, result, totals, maxCombos, stats) {
   const winnerMentions = result.winnerSide === 'left' ? result.left.mentions : result.right.mentions
   const loserMentions = result.winnerSide === 'left' ? result.right.mentions : result.left.mentions
-  const sourceTotals = ['reddit', 'x', 'tiktok', 'news'].map((source) => ({
-    source,
-    n: (result.left.sources[source] || 0) + (result.right.sources[source] || 0),
-  }))
-  const loudest = [...sourceTotals].sort((a, b) => b.n - a.n)[0]
   const winnerCombo = maxCombos?.[result.winnerSide] || 0
+  const winnerRecord = getFighterRecord(stats, result.winner.id)
+  const ydayWinner = result.winnerSide === 'left' ? totals?.leftYesterday : totals?.rightYesterday
+  const ydayLoser = result.winnerSide === 'left' ? totals?.rightYesterday : totals?.leftYesterday
   const notes = [
-    `${result.winner.name} closed it ${winnerMentions}–${loserMentions} in the scored search window.`,
-    `Loudest platform: ${SOURCE_LABELS[loudest.source]} with ${loudest.n} hits this fight.`,
+    `${result.winner.name} closed it ${formatCount(winnerMentions)}–${formatCount(loserMentions)} on real keyword hits.`,
+    `Yesterday's searches: ${formatCount(ydayWinner)} for ${result.winner.name} vs ${formatCount(ydayLoser)} for ${result.loser.name}.`,
     winnerCombo > 1
       ? `${result.winner.name} stacked a ${winnerCombo}-hit combo before the KO.`
       : `${result.loser.name} never found a real combo. The timeline did not blink.`,
+    winnerRecord.wins || winnerRecord.losses
+      ? `${result.winner.name} now sits at ${winnerRecord.wins}-${winnerRecord.losses} in the arena book.`
+      : `${result.winner.name} just opened an arena record.`,
   ]
   return {
-    blurb: `${result.winner.name} took the belt with ${roundShare(result.winnerShare)}% of the timeline. ${result.loser.name} showed up, then got washed as the mentions piled on.`,
+    blurb: `${result.winner.name} took the belt with ${roundShare(result.winnerShare)}% of the posts. ${result.loser.name} showed up, then got washed as the mentions piled on.`,
     notes,
-    liveTotals: totals
-      ? { left: totals.leftTotal ?? 0, right: totals.rightTotal ?? 0, metric: totals.metric }
-      : null,
   }
 }

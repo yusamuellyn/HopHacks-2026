@@ -6,7 +6,7 @@ import { FxProvider } from './lib/fx.jsx'
 import { SfxProvider } from './lib/sfx.jsx'
 import SfxLab from './components/SfxLab.jsx'
 import { setMusicTrack, unlockMusic, stopMusic } from './lib/music.js'
-import { loadStats, recordBattle } from './lib/stats.js'
+import { fetchStats, loadStats, recordBattle } from './lib/stats.js'
 import './App.css'
 
 export default function App() {
@@ -24,18 +24,22 @@ function AppShell() {
   const [left, setLeft] = useState(null)
   const [right, setRight] = useState(null)
   const [stats, setStats] = useState(loadStats)
-  const [metric, setMetric] = useState('mentions')
 
   const onBattleEnd = useCallback((result) => {
-    setStats((current) =>
-      recordBattle(current, {
-        winnerId: result.winner.id,
-        loserId: result.loser.id,
-        winnerShare: result.winnerShare,
-        leftId: result.winnerSide === 'left' ? result.winner.id : result.loser.id,
-        rightId: result.winnerSide === 'right' ? result.winner.id : result.loser.id,
-      }),
-    )
+    recordBattle({
+      leftId: result.leftId,
+      rightId: result.rightId,
+      winnerId: result.winner.id,
+      leftTotal: result.left.mentions,
+      rightTotal: result.right.mentions,
+      winnerShare: result.winnerShare,
+    })
+      .then(setStats)
+      .catch((err) => console.error('Failed to save record', err))
+  }, [])
+
+  useEffect(() => {
+    fetchStats().then(setStats).catch((err) => console.error('Failed to load records', err))
   }, [])
 
   useEffect(() => {
@@ -64,10 +68,7 @@ function AppShell() {
             stats={stats}
             onSelectLeft={setLeft}
             onSelectRight={setRight}
-            onStart={(chosenMetric) => {
-              setMetric(chosenMetric || 'mentions')
-              setScreen('battle')
-            }}
+            onStart={() => setScreen('battle')}
           />
         </>
       ) : (
@@ -80,6 +81,7 @@ function AppShell() {
             setLeft(null)
             setRight(null)
             setScreen('select')
+            fetchStats().then(setStats).catch(() => {})
           }}
         />
       )}

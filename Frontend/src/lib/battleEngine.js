@@ -1,170 +1,174 @@
-import { pidScore, scoreMention, sharesFromPid } from './scoring.js'
-
-const SOURCES = ['reddit', 'x', 'tiktok', 'news']
-const REDDITS = ['r/memes', 'r/okbuddyretard', 'r/brainrot', 'r/OutOfTheLoop', 'r/tiktokcringe']
-const X_BITS = ['quote tweet', 'reply chain', 'ratio attempt', 'community note']
-const TIKTOKS = ['stitch', 'sound clip', 'duet', 'POV video']
-const NEWS = ['Teen Vogue', 'Polygon', 'NYT Styles', 'KnowYourMeme', 'BBC Culture']
+export function sharesFromCounts(leftMentions, rightMentions) {
+  const left = Math.max(0, leftMentions)
+  const right = Math.max(0, rightMentions)
+  const total = left + right
+  if (total <= 0) {
+    return { leftShare: 50, rightShare: 50 }
+  }
+  const leftShare = (left / total) * 100
+  return { leftShare, rightShare: 100 - leftShare }
+}
 
 function pick(list) {
   return list[Math.floor(Math.random() * list.length)]
 }
 
-function weightedSide(leftPower, rightPower) {
-  const jitter = 0.15 + Math.random() * 0.2
-  const l = leftPower * (0.7 + Math.random() * 0.6)
-  const r = rightPower * (0.7 + Math.random() * 0.6)
+const LEAD_LINES = [
+  (a, d) => `${a} floods the timeline and shoves ${d} aside!`,
+  (a, d) => `${a} is everywhere — ${d} is getting buried!`,
+  (a) => `Keyword spike! ${a} takes another chunk of the feed!`,
+  (a, d) => `The crowd chants ${a.toUpperCase()}! ${d} can't breathe!`,
+  (a) => `${a} steals the search results again!`,
+  (a, d) => `${a} lands a heavy mention wave on ${d}!`,
+]
+
+const CHASE_LINES = [
+  (a, d) => `${a} tries to clap back at ${d}!`,
+  (a) => `${a} scrapes a handful of posts...`,
+  (a, d) => `${a} refuses to disappear while ${d} runs the feed!`,
+  (a) => `A small bounce for ${a}!`,
+]
+
+const COMBO_LINES = [
+  (a, n) => `COMBO x${n}! ${a} will not let up!`,
+  (a, n) => `${a} strings together a ${n}-hit search streak!`,
+  (a, n) => `${n} in a row! ${a} is taking over the comments!`,
+]
+
+function commentaryFor({ attacker, defender, combo, lead }) {
+  if (combo >= 3) return pick(COMBO_LINES)(attacker.name, combo)
+  if (lead) return pick(LEAD_LINES)(attacker.name, defender.name)
+  return pick(CHASE_LINES)(attacker.name, defender.name)
+}
+
+function pickAttacker(leftPower, rightPower) {
+  const total = leftPower + rightPower
+  if (total <= 0) return Math.random() < 0.5 ? 'left' : 'right'
+  // Tiny jitter so the underdog still throws, but a big lead owns the animations.
+  const jitter = 0.06
   if (Math.random() < jitter) return Math.random() < 0.5 ? 'left' : 'right'
-  return l >= r ? 'left' : 'right'
-}
-
-function generateMention(meme) {
-  const source = pick(SOURCES)
-  const ageMinutes = source === 'news' ? 6 + Math.random() * 40 : Math.random() ** 2.6 * 22
-  const engagement =
-    source === 'news'
-      ? 80 + Math.random() * 400
-      : Math.floor(Math.random() ** 2.2 * 2500)
-
-  let detail = ''
-  if (source === 'reddit') detail = pick(REDDITS)
-  if (source === 'x') detail = pick(X_BITS)
-  if (source === 'tiktok') detail = pick(TIKTOKS)
-  if (source === 'news') detail = pick(NEWS)
-
-  const ageLabel =
-    ageMinutes < 1
-      ? `${Math.max(1, Math.round(ageMinutes * 60))} sec ago`
-      : `${Math.max(1, Math.round(ageMinutes))} min ago`
-
-  const verb =
-    source === 'reddit'
-      ? `mentioned in ${detail}`
-      : source === 'x'
-        ? `X ${detail}`
-        : source === 'tiktok'
-          ? `TikTok ${detail}`
-          : `${detail} article`
-
-  return {
-    source,
-    ageMinutes,
-    engagement,
-    text: `Found: '${meme.name}' ${verb} (${ageLabel})...`,
-  }
-}
-
-function blankSide() {
-  return {
-    mentions: 0,
-    current: 0,
-    accumulated: 0,
-    velocity: 0,
-    pid: 0,
-    sources: { reddit: 0, x: 0, tiktok: 0, news: 0 },
-    history: [],
-  }
+  return Math.random() < leftPower / total ? 'left' : 'right'
 }
 
 export function startBattle({
   left,
   right,
+  leftTotal = 0,
+  rightTotal = 0,
+  leftYesterday = 0,
+  rightYesterday = 0,
+  leftLatest = 0,
+  rightLatest = 0,
   durationMs = 19000,
-  intervalMs = 480,
+  attackMs = 680,
   onTick,
   onFinish,
 }) {
-  const leftState = blankSide()
-  const rightState = blankSide()
   const started = performance.now()
-  let last = started
-  let spikeSide = null
-  let spikeLeft = 0
+  const leftPower = Math.max(0.35, leftTotal + leftYesterday * 0.35)
+  const rightPower = Math.max(0.35, rightTotal + rightYesterday * 0.35)
+  let lastAttack = started - attackMs + 220
+  let lastEmit = 0
+  let lastSide = null
+  let combo = 0
+  let cancelled = false
+  let finished = false
+  let frameId = 0
 
-  const leftPower = 12 + left.yesterdayPopularity
-  const rightPower = 12 + right.yesterdayPopularity
-
-  const apply = (side, meme) => {
-    const mention = generateMention(meme)
-    const points = scoreMention(mention)
-    const now = performance.now()
-    const dt = Math.max(0.2, (now - last) / 1000)
-    side.mentions += 1
-    side.sources[mention.source] += 1
-    side.current = points
-    side.accumulated += points
-    side.history.push(points)
-    if (side.history.length > 8) side.history.shift()
-    const windowSum = side.history.reduce((a, b) => a + b, 0)
-    side.velocity = windowSum / (dt * side.history.length)
-    side.pid = pidScore({
-      current: side.current,
-      accumulated: side.accumulated,
-      velocity: side.velocity,
-    })
-    return mention
-  }
-
-  const snapshot = (elapsed) => {
-    const shares = sharesFromPid(leftState.pid, rightState.pid)
+  const snapshot = (elapsed, event = null) => {
+    const progress = Math.min(1, elapsed / durationMs)
+    const leftExact = leftTotal * progress
+    const rightExact = rightTotal * progress
+    const shares = sharesFromCounts(leftExact, rightExact)
     return {
       elapsed,
       remainingMs: Math.max(0, durationMs - elapsed),
-      left: { ...leftState, sources: { ...leftState.sources }, share: shares.leftShare },
-      right: { ...rightState, sources: { ...rightState.sources }, share: shares.rightShare },
+      left: {
+        mentions: Math.round(leftExact),
+        share: shares.leftShare,
+        sources: {
+          yesterday: leftYesterday,
+          latest: leftLatest,
+          total: leftTotal,
+        },
+      },
+      right: {
+        mentions: Math.round(rightExact),
+        share: shares.rightShare,
+        sources: {
+          yesterday: rightYesterday,
+          latest: rightLatest,
+          total: rightTotal,
+        },
+      },
+      event,
     }
   }
 
-  const tick = () => {
-    const now = performance.now()
+  const finish = () => {
+    if (finished || cancelled) return
+    finished = true
+    cancelAnimationFrame(frameId)
+    const shares = sharesFromCounts(leftTotal, rightTotal)
+    const leftWins = leftTotal >= rightTotal
+    onFinish({
+      ...snapshot(durationMs),
+      left: {
+        mentions: leftTotal,
+        share: shares.leftShare,
+        sources: { yesterday: leftYesterday, latest: leftLatest, total: leftTotal },
+      },
+      right: {
+        mentions: rightTotal,
+        share: shares.rightShare,
+        sources: { yesterday: rightYesterday, latest: rightLatest, total: rightTotal },
+      },
+      leftId: left.id,
+      rightId: right.id,
+      winnerSide: leftWins ? 'left' : 'right',
+      winner: leftWins ? left : right,
+      loser: leftWins ? right : left,
+      winnerShare: leftWins ? shares.leftShare : shares.rightShare,
+    })
+  }
+
+  const tick = (now) => {
+    if (cancelled || finished) return
     const elapsed = now - started
-    if (spikeLeft <= 0 && Math.random() < 0.18) {
-      spikeSide = weightedSide(leftPower, rightPower)
-      spikeLeft = 2 + Math.floor(Math.random() * 3)
+    let event = null
+
+    if (elapsed < durationMs && now - lastAttack >= attackMs) {
+      lastAttack = now
+      const side = pickAttacker(leftPower, rightPower)
+      combo = lastSide === side ? combo + 1 : 1
+      lastSide = side
+      const attacker = side === 'left' ? left : right
+      const defender = side === 'left' ? right : left
+      const lead = side === 'left' ? leftPower >= rightPower : rightPower >= leftPower
+      event = {
+        id: `${Math.round(elapsed)}-${side}-${combo}`,
+        side,
+        combo,
+        text: commentaryFor({ attacker, defender, combo, lead }),
+      }
     }
 
-    const side =
-      spikeLeft > 0
-        ? spikeSide
-        : weightedSide(leftPower, rightPower)
-    if (spikeLeft > 0) spikeLeft -= 1
-
-    const mention =
-      side === 'left' ? apply(leftState, left) : apply(rightState, right)
-    last = now
-
-    const frame = snapshot(elapsed)
-    onTick({
-      ...frame,
-      event: { ...mention, side, id: `${elapsed}-${side}-${frame.left.mentions}-${frame.right.mentions}` },
-    })
+    if (event || now - lastEmit > 50 || elapsed >= durationMs) {
+      lastEmit = now
+      onTick(snapshot(elapsed, event))
+    }
 
     if (elapsed >= durationMs) {
-      finished = true
-      window.clearInterval(timer)
-      const finalFrame = snapshot(durationMs)
-      const leftWins = finalFrame.left.share >= finalFrame.right.share
-      onFinish({
-        ...finalFrame,
-        winnerSide: leftWins ? 'left' : 'right',
-        winner: leftWins ? left : right,
-        loser: leftWins ? right : left,
-        winnerShare: leftWins ? finalFrame.left.share : finalFrame.right.share,
-      })
+      finish()
+      return
     }
+    frameId = requestAnimationFrame(tick)
   }
 
-  let cancelled = false
-  let finished = false
-  const wrappedTick = () => {
-    if (!cancelled && !finished) tick()
-  }
-  const timer = window.setInterval(wrappedTick, intervalMs)
-  const kickoff = window.setTimeout(wrappedTick, 180)
+  frameId = requestAnimationFrame(tick)
 
   return () => {
     cancelled = true
-    window.clearInterval(timer)
-    window.clearTimeout(kickoff)
+    cancelAnimationFrame(frameId)
   }
 }

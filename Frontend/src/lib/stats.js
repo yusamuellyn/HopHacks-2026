@@ -1,73 +1,100 @@
-const STORAGE_KEY = 'meme-arena-stats-v1'
+const STORAGE_KEY = 'meme-arena-stats-v2'
 
 function todayKey() {
   const now = new Date()
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
 }
 
-function emptyStats() {
+export function emptyStats() {
   return {
     battles: 0,
     fighters: {},
-    lastChampionId: 'tung-tung-tung-sahur',
+    lastChampionId: null,
     daily: { date: todayKey(), wins: {}, battles: 0 },
+    window: { yesterday: null, latest: null },
+    recent: [],
+    maxYesterday: 0,
+  }
+}
+
+export function formatCount(n) {
+  if (n == null || Number.isNaN(Number(n))) return '—'
+  return Math.round(Number(n)).toLocaleString()
+}
+
+export function formatDay(iso) {
+  if (!iso) return null
+  const [year, month, day] = iso.split('-').map(Number)
+  if (!year || !month || !day) return iso
+  return new Date(year, month - 1, day).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+function cacheStats(stats) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stats))
+  } catch {
+    // ignore quota / private mode
   }
 }
 
 export function loadStats() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    const parsed = raw ? JSON.parse(raw) : emptyStats()
-    if (!parsed.daily || parsed.daily.date !== todayKey()) {
-      parsed.daily = { date: todayKey(), wins: {}, battles: 0 }
+    if (!raw) return emptyStats()
+    const parsed = JSON.parse(raw)
+    return {
+      ...emptyStats(),
+      ...parsed,
+      fighters: parsed.fighters || {},
+      daily: parsed.daily || emptyStats().daily,
+      recent: parsed.recent || [],
     }
-    return parsed
   } catch {
     return emptyStats()
   }
 }
 
-export function recordBattle(stats, { winnerId, loserId, winnerShare, leftId, rightId }) {
-  const day = todayKey()
-  const daily =
-    stats.daily?.date === day
-      ? { ...stats.daily, wins: { ...stats.daily.wins } }
-      : { date: day, wins: {}, battles: 0 }
+export async function fetchStats() {
+  const res = await fetch('/api/stats')
+  if (!res.ok) throw new Error('Failed to load records')
+  const stats = await res.json()
+  cacheStats(stats)
+  return stats
+}
 
-  const next = {
-    battles: stats.battles + 1,
-    lastChampionId: winnerId,
-    fighters: { ...stats.fighters },
-    daily: {
-      ...daily,
-      battles: (daily.battles || 0) + 1,
-      wins: { ...daily.wins, [winnerId]: (daily.wins[winnerId] || 0) + 1 },
-    },
-  }
-
-  for (const id of [leftId, rightId]) {
-    if (!next.fighters[id]) {
-      next.fighters[id] = { wins: 0, losses: 0, lastShare: 50 }
-    }
-  }
-
-  next.fighters[winnerId] = {
-    ...next.fighters[winnerId],
-    wins: next.fighters[winnerId].wins + 1,
-    lastShare: winnerShare,
-  }
-  next.fighters[loserId] = {
-    ...next.fighters[loserId],
-    losses: next.fighters[loserId].losses + 1,
-    lastShare: 100 - winnerShare,
-  }
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-  return next
+export async function recordBattle(result) {
+  const res = await fetch('/api/record-battle', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      leftId: result.leftId,
+      rightId: result.rightId,
+      winnerId: result.winnerId,
+      leftTotal: result.leftTotal,
+      rightTotal: result.rightTotal,
+      winnerShare: result.winnerShare,
+    }),
+  })
+  if (!res.ok) throw new Error('Failed to save battle')
+  const stats = await res.json()
+  cacheStats(stats)
+  return stats
 }
 
 export function getFighterRecord(stats, memeId) {
-  return stats.fighters[memeId] ?? { wins: 0, losses: 0, lastShare: null }
+  return (
+    stats.fighters?.[memeId] ?? {
+      wins: 0,
+      losses: 0,
+      lastShare: null,
+      yesterdayMentions: 0,
+      latestMentions: 0,
+      totalMentions: 0,
+    }
+  )
 }
 
 export function getDailyLeaderboard(stats, roster) {
@@ -75,15 +102,23 @@ export function getDailyLeaderboard(stats, roster) {
   const dailyWins = stats.daily?.date === day ? stats.daily.wins || {} : {}
   return roster
     .map((meme) => {
-      const record = stats.fighters[meme.id] ?? { wins: 0, losses: 0 }
+      const record = getFighterRecord(stats, meme.id)
       return {
         ...meme,
         dayWins: dailyWins[meme.id] || 0,
         wins: record.wins || 0,
         losses: record.losses || 0,
+        yesterdayMentions: record.yesterdayMentions || 0,
+        totalMentions: record.totalMentions || 0,
       }
     })
-    .sort((a, b) => b.dayWins - a.dayWins || b.wins - a.wins || b.yesterdayPopularity - a.yesterdayPopularity)
+    .sort(
+      (a, b) =>
+        b.dayWins - a.dayWins ||
+        b.wins - a.wins ||
+        b.yesterdayMentions - a.yesterdayMentions ||
+        b.totalMentions - a.totalMentions,
+    )
     .filter((row) => row.dayWins > 0 || row.wins > 0 || row.losses > 0)
     .slice(0, 8)
 }

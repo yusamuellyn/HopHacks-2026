@@ -58,6 +58,13 @@
   animation: title-pulse 2.6s ease-in-out infinite;
 }
 
+.window-note {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
 .tagline {
   color: var(--ink);
   font-size: 22px;
@@ -193,7 +200,7 @@
 
 .slot__stats dd {
   margin: 0;
-  font-size: 22px;
+  font-size: clamp(14px, 1.8vw, 22px);
   font-weight: 700;
 }
 
@@ -838,6 +845,13 @@
   box-shadow: var(--shadow);
 }
 
+.breakdown__window {
+  margin: -2px 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
 .breakdown ul {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1258,6 +1272,44 @@
   color: var(--muted);
   font-weight: 700;
   margin-bottom: 10px;
+}
+
+.recap-board__empty {
+  grid-column: 1 / -1;
+  aspect-ratio: auto !important;
+  min-height: 64px;
+  display: grid;
+  place-items: center;
+}
+
+.recap-history {
+  margin-top: 16px;
+  text-align: left;
+}
+
+.recap-history h4 {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.recap-history ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.recap-history li {
+  aspect-ratio: auto;
+  min-height: 0;
+  display: block;
+  text-align: left;
+  font-size: 14px;
+  padding: 8px 10px;
 }
 
 .recap-board ol,

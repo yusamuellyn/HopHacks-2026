@@ -1,12 +1,16 @@
 import FighterPortrait from './FighterPortrait.jsx'
+import { formatCount, getFighterRecord } from '../lib/stats.js'
 
 export function getMood(meme, stats) {
-  const record = stats.fighters[meme.id]
-  const popularity = meme.yesterdayPopularity + (record?.wins ?? 0) * 8 - (record?.losses ?? 0) * 5
+  const record = getFighterRecord(stats, meme.id)
+  const yday = record.yesterdayMentions || 0
+  const maxYesterday = Math.max(1, stats.maxYesterday || 0)
+  const heat = Math.min(100, (Math.log1p(yday) / Math.log1p(maxYesterday)) * 100)
+  const popularity = heat + (record.wins ?? 0) * 8 - (record.losses ?? 0) * 5
   const isChamp = stats.lastChampionId === meme.id || popularity >= 80
   if (isChamp && popularity >= 70) return 'champion'
-  if (popularity < 22) return 'homeless'
-  if (popularity < 40) return 'washed'
+  if (popularity < 12) return 'homeless'
+  if (popularity < 28) return 'washed'
   return 'contender'
 }
 
@@ -22,7 +26,7 @@ export default function FighterSlot({ meme, stats, side, emptyLabel }) {
   }
 
   const mood = getMood(meme, stats)
-  const record = stats.fighters[meme.id] ?? { wins: 0, losses: 0 }
+  const record = getFighterRecord(stats, meme.id)
 
   return (
     <article
@@ -39,14 +43,14 @@ export default function FighterSlot({ meme, stats, side, emptyLabel }) {
       <dl className="slot__stats">
         <div>
           <dt>Yesterday</dt>
-          <dd>{meme.yesterdayPopularity}</dd>
+          <dd>{formatCount(record.yesterdayMentions)}</dd>
         </div>
-          <div>
-            <dt>W / L</dt>
-            <dd>
-              {record.wins} / {record.losses}
-            </dd>
-          </div>
+        <div>
+          <dt>W / L</dt>
+          <dd>
+            {record.wins} / {record.losses}
+          </dd>
+        </div>
         <div>
           <dt>Aura</dt>
           <dd>{mood.toUpperCase()}</dd>

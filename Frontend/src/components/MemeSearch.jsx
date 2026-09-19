@@ -35,7 +35,7 @@ export default function MemeSearch({
   }, [])
 
   function announcePick(memeName) {
-    fetch('http://localhost:8000/api/announce-pick', {
+    fetch('/api/announce-pick', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ memeName }),
