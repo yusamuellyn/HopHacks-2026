@@ -39,15 +39,15 @@ def battle(payload: BattleRequest):
     conn = get_conn()
     cur = conn.cursor()
 
-    left_conditions = " OR ".join(["text ILIKE %s"] * len(left_terms))
-    right_conditions = " OR ".join(["text ILIKE %s"] * len(right_terms))
-
-    cur.execute(f"""
+    # meme_mentions is precomputed by build_mentions.py (one row per
+    # meme/tweet pair), so this is an index lookup instead of a 29M-row scan.
+    cur.execute("""
         SELECT
-            count(DISTINCT tweet_id) FILTER (WHERE {left_conditions}) AS left_total,
-            count(DISTINCT tweet_id) FILTER (WHERE {right_conditions}) AS right_total
-        FROM tweets_raw
-    """, [f"%{t}%" for t in left_terms] + [f"%{t}%" for t in right_terms])
+            count(*) FILTER (WHERE meme_id = %s) AS left_total,
+            count(*) FILTER (WHERE meme_id = %s) AS right_total
+        FROM meme_mentions
+        WHERE meme_id IN (%s, %s)
+    """, [payload.leftId, payload.rightId, payload.leftId, payload.rightId])
 
     left_total, right_total = cur.fetchone()
     cur.close()
