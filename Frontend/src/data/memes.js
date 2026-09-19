@@ -620,3 +620,22 @@ export function searchMemes(query) {
 export function getMemeById(id) {
   return MEMES.find((meme) => meme.id === id) ?? null
 }
+
+export function memeDossier(meme) {
+  const heat = meme.yesterdayPopularity ?? 50
+  let peak = `${meme.age} breakout`
+  if (heat >= 85) peak = `Still peaking (${heat}/100 heat)`
+  else if (heat >= 60) peak = `${meme.age} boom, still circulating (${heat}/100)`
+  else if (heat >= 35) peak = `${meme.age} peak, mid revival (${heat}/100)`
+  else peak = `${meme.age} peak, currently washed (${heat}/100)`
+
+  return {
+    age: meme.age,
+    origin: meme.origin,
+    peak,
+    meaning: meme.description,
+    mostUsed: meme.aliases?.[0] ? `"${meme.aliases[0]}"` : `"${meme.name}"`,
+    alsoKnownAs: (meme.aliases || []).slice(0, 3).join(' · ') || meme.name,
+    heat,
+  }
+}

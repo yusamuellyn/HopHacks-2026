@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { startBattle } from '../lib/battleEngine.js'
 import { useFx } from '../lib/fx.jsx'
+import { useSfx } from '../lib/sfx.jsx'
+import { setMusicTrack } from '../lib/music.js'
 import { getMood } from './FighterSlot.jsx'
 import FighterPortrait, { memeGlyph } from './FighterPortrait.jsx'
 import FloatPop, { pickPath, pickShape, Projectile } from './FloatPop.jsx'
 import StageBackdrop from './StageBackdrop.jsx'
+import BattleRecap from './BattleRecap.jsx'
 import { useCountUp } from '../lib/useCountUp.js'
 
 
@@ -16,6 +19,17 @@ const EASTER_HP = {
 
 function roundShare(n) {
   return Math.round(n)
+}
+
+function fighterMotion(share, side, over = false) {
+  const lead = (share - 50) / 50
+  const extra = over ? Math.abs(lead) * 0.16 : 0
+  const size = Math.max(0.52, 1 + lead * 0.55 + (share >= 50 ? extra : -extra))
+  const lean = lead * 10
+  return {
+    '--size': size.toFixed(3),
+    '--lean': `${side === 'left' ? lean : -lean}deg`,
+  }
 }
 
 function downloadShareCard({ left, right, winner, winnerShare }) {
@@ -52,9 +66,13 @@ function downloadShareCard({ left, right, winner, winnerShare }) {
 
 export default function Arena({ left, right, stats, onRematch, onBattleEnd })  {
   const { fx } = useFx()
+  const sfx = useSfx()
+  const sfxRef = useRef(sfx)
+  sfxRef.current = sfx
   const [feed, setFeed] = useState([])
   const [frame, setFrame] = useState(null)
   const [result, setResult] = useState(null)
+  const [showRecap, setShowRecap] = useState(false)
   const [flash, setFlash] = useState(null)
   const [easter, setEaster] = useState(null)
   const [hit, setHit] = useState(null)
@@ -70,6 +88,8 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd })  {
   const feedRef = useRef(null)
   const lastSide = useRef(null)
   const combosRef = useRef({ left: 0, right: 0 })
+  const maxCombosRef = useRef({ left: 0, right: 0 })
+  const [maxCombos, setMaxCombos] = useState({ left: 0, right: 0 })
   const hitTimes = useRef({ left: [], right: [] })
   const particleId = useRef(0)
   const inflight = useRef(false)
@@ -80,10 +100,22 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd })  {
   const announcedStart = useRef(false)
 
   useEffect(() => {
+    if (!result) {
+      setShowRecap(false)
+      return
+    }
+    const timer = setTimeout(() => setShowRecap(true), 1500)
+    return () => clearTimeout(timer)
+  }, [result])
+
+  useEffect(() => {
     ended.current = false
+    maxCombosRef.current = { left: 0, right: 0 }
+    setMaxCombos({ left: 0, right: 0 })
 
     if (!announcedStart.current) {
     announcedStart.current = true
+    sfxRef.current.play('startBell')
     fetch('http://localhost:8000/api/announce-start', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -116,6 +148,9 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd })  {
         const nextCombo = lastSide.current === attacker ? (combosRef.current[attacker] || 0) + 1 : 1
         lastSide.current = attacker
         combosRef.current = { ...combosRef.current, [attacker]: nextCombo, [defender]: 0 }
+        if (nextCombo > (maxCombosRef.current[attacker] || 0)) {
+          maxCombosRef.current = { ...maxCombosRef.current, [attacker]: nextCombo }
+        }
         setCombos({ ...combosRef.current })
 
         if (!inflight.current) {
@@ -140,10 +175,11 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd })  {
             },
           ])
 
-          window.setTimeout(() => {
+            window.setTimeout(() => {
             setShot(null)
             setHit(defender)
             setFlash(defender)
+            sfxRef.current.playImpact(nextCombo)
             setComboPops([
               {
                 id: shotId,
@@ -182,7 +218,9 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd })  {
         ended.current = true
         setFrame(finalResult)
         setResult(finalResult)
+        setMaxCombos({ ...maxCombosRef.current })
         onBattleEnd(finalResult)
+        sfxRef.current.play('finishFanfare')
 
         fetch('http://localhost:8000/api/announce-winner', {
           method: 'POST',
@@ -225,6 +263,14 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd })  {
   const leftShare = frame?.left.share ?? 50
   const rightShare = frame?.right.share ?? 50
   const remaining = Math.ceil((frame?.remainingMs ?? 19000) / 1000)
+
+  useEffect(() => {
+    if (result) {
+      setMusicTrack('recap')
+      return
+    }
+    setMusicTrack(remaining <= 5 ? 'battleClimax' : 'battle')
+  }, [remaining, result])
 
   const breakdown = useMemo(() => {
     if (!frame) return []
@@ -290,8 +336,8 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd })  {
         <StageBackdrop mode="battle" />
         {shot && <Projectile shot={shot} />}
         <div
-          className={`fighter-stage fighter-stage--left ${throwSide === 'left' ? 'is-throw' : ''} ${hit === 'left' ? 'is-flash' : ''}`}
-          style={{ '--heat': Math.min(1, rates.left / 80) }}
+          className={`fighter-stage fighter-stage--left ${throwSide === 'left' ? 'is-throw' : ''} ${hit === 'left' ? 'is-flash' : ''} ${combos.left >= 3 ? 'is-combo' : ''}`}
+          style={{ '--heat': Math.min(1, rates.left / 80), ...fighterMotion(leftShare, 'left', Boolean(result)) }}
         >
           {fx.rain &&
             rain
@@ -302,13 +348,17 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd })  {
                 </span>
               ))}
           {fx.combo && combos.left > 0 && <div className="combo-meter">{combos.left} COMBO</div>}
-          <FighterPortrait meme={left} mood={leftMood} state={leftState} />
+          <div className="fighter-scale">
+            <FighterPortrait meme={left} mood={leftMood} state={leftState} />
+          </div>
           <b>{Math.round(leftShare)}%</b>
         </div>
-        <div className="arena__impact" aria-hidden="true" />
+        <strong className="arena__vs" aria-hidden="true">
+          VS
+        </strong>
         <div
-          className={`fighter-stage fighter-stage--right ${throwSide === 'right' ? 'is-throw' : ''} ${hit === 'right' ? 'is-flash' : ''}`}
-          style={{ '--heat': Math.min(1, rates.right / 80) }}
+          className={`fighter-stage fighter-stage--right ${throwSide === 'right' ? 'is-throw' : ''} ${hit === 'right' ? 'is-flash' : ''} ${combos.right >= 3 ? 'is-combo' : ''}`}
+          style={{ '--heat': Math.min(1, rates.right / 80), ...fighterMotion(rightShare, 'right', Boolean(result)) }}
         >
           {fx.rain &&
             rain
@@ -319,7 +369,9 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd })  {
                 </span>
               ))}
           {fx.combo && combos.right > 0 && <div className="combo-meter">{combos.right} COMBO</div>}
-          <FighterPortrait meme={right} mood={rightMood} state={rightState} />
+          <div className="fighter-scale">
+            <FighterPortrait meme={right} mood={rightMood} state={rightState} />
+          </div>
           <b>{Math.round(rightShare)}%</b>
         </div>
       </div>
@@ -356,37 +408,24 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd })  {
         </div>
       )}
 
-      {result && (
-        <div className="winner">
-          <p className="winner__kicker">FINAL</p>
-          <h2>
-            {result.winner.name.toUpperCase()} WINS — {Math.round(result.winnerShare)}% MEME DOMINANCE
-          </h2>
-          <p>
-            {result.winner.name} landed {result.winnerSide === 'left' ? result.left.mentions : result.right.mentions}{' '}
-            scored mentions vs {result.loser.name} at{' '}
-            {result.winnerSide === 'left' ? result.right.mentions : result.left.mentions} in the last search window.
-          </p>
-          <div className="winner__actions">
-            <button type="button" className="start-btn" onClick={onRematch}>
-              REMATCH
-            </button>
-            <button
-              type="button"
-              className="ghost-btn"
-              onClick={() =>
-                downloadShareCard({
-                  left,
-                  right,
-                  winner: result.winner,
-                  winnerShare: result.winnerShare,
-                })
-              }
-            >
-              SHARE THIS BATTLE
-            </button>
-          </div>
-        </div>
+      {showRecap && (
+        <BattleRecap
+          left={left}
+          right={right}
+          result={result}
+          stats={stats}
+          totals={totals}
+          maxCombos={maxCombos}
+          onRematch={onRematch}
+          onShare={() =>
+            downloadShareCard({
+              left,
+              right,
+              winner: result.winner,
+              winnerShare: result.winnerShare,
+            })
+          }
+        />
       )}
     </div>
   )
