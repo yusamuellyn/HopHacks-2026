@@ -1,0 +1,16 @@
+MEME_SEARCH_TERMS = {
+    "tung-tung-tung-sahur": ["tung tung tung sahur", "tung tung", "sahur"],
+    "skibidi-toilet": ["skibidi toilet", "skibidi"],
+    "ohio": ["only in ohio", "ohio meme"],
+    "sixty-seven": ["6-7", "six seven", "6 7"],
+    "tralalero-tralala": ["tralalero tralala", "tralalero", "tralala"],
+    "bombardino-crocodilo": ["bombardino crocodilo", "bombardino", "crocodilo"],
+    "labubu": ["labubu", "labubus"],
+    "chill-guy": ["chill guy", "just a chill guy", "chillguy"],
+    "rizz": ["rizz", "unspoken rizz", "rizzler"],
+    "sigma": ["sigma male", "what the sigma"],
+    "gyatt": ["gyatt", "gyat", "gyatt damn"],
+    "fanum-tax": ["fanum tax", "fanum"],
+    "very-demure": ["very demure", "demure", "very mindful"],
+    "brat": ["brat", "bratsummer"],
+}
