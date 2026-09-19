@@ -3,7 +3,7 @@ export const MEMES = [
   {
     id: 'tung-tung-tung-sahur',
     name: 'Tung Tung Tung Sahur',
-    aliases: ['tung tung', 'sahur', 'tung tung tung'],
+    aliases: ['tung tung tung sahur', 'tung tung', 'sahur'],
     age: '2025',
     origin: 'Italian brainrot / TikTok',
     description:
@@ -12,12 +12,11 @@ export const MEMES = [
     color: '#f4c430',
     accent: '#7c2d12',
     sigil: 'drum',
-    categories: ['modern', 'creature'],
   },
   {
     id: 'skibidi-toilet',
     name: 'Skibidi Toilet',
-    aliases: ['skibidi', 'toilet'],
+    aliases: ['skibidi toilet', 'skibidi'],
     age: '2023',
     origin: 'YouTube / DaFuq!?Boom!',
     description:
@@ -26,7 +25,6 @@ export const MEMES = [
     color: '#5eead4',
     accent: '#134e4a',
     sigil: 'toilet',
-    categories: ['modern', 'object'],
   },
   {
     id: 'ohio',
@@ -40,12 +38,11 @@ export const MEMES = [
     color: '#fb7185',
     accent: '#9f1239',
     sigil: 'ohio',
-    categories: ['modern', 'slang'],
   },
   {
     id: 'sixty-seven',
     name: '67',
-    aliases: ['6-7', 'six seven', '6 7'],
+    aliases: ['six seven', '6-7 meme'],
     age: '2025',
     origin: 'Slang / schoolyard / TikTok',
     description:
@@ -54,12 +51,11 @@ export const MEMES = [
     color: '#a3e635',
     accent: '#3f6212',
     sigil: '67',
-    categories: ['modern', 'slang'],
   },
   {
     id: 'tralalero-tralala',
     name: 'Tralalero Tralala',
-    aliases: ['tralalero', 'tralala'],
+    aliases: ['tralalero tralala', 'tralalero', 'tralala'],
     age: '2025',
     origin: 'Italian brainrot',
     description:
@@ -68,12 +64,11 @@ export const MEMES = [
     color: '#38bdf8',
     accent: '#0c4a6e',
     sigil: 'shark',
-    categories: ['modern', 'animal'],
   },
   {
     id: 'bombardino-crocodilo',
     name: 'Bombardino Crocodilo',
-    aliases: ['bombardino', 'crocodilo', 'crocodile bomber'],
+    aliases: ['bombardino crocodilo', 'bombardino', 'crocodilo'],
     age: '2025',
     origin: 'Italian brainrot',
     description:
@@ -82,12 +77,11 @@ export const MEMES = [
     color: '#86efac',
     accent: '#14532d',
     sigil: 'croc',
-    categories: ['modern', 'animal'],
   },
   {
     id: 'labubu',
     name: 'Labubu',
-    aliases: ['labubus', 'pop mart'],
+    aliases: ['labubu', 'labubus'],
     age: '2024',
     origin: 'Pop Mart / Lisa / collector culture',
     description:
@@ -96,12 +90,11 @@ export const MEMES = [
     color: '#f9a8d4',
     accent: '#9d174d',
     sigil: 'labubu',
-    categories: ['modern', 'creature'],
   },
   {
     id: 'chill-guy',
     name: 'Chill Guy',
-    aliases: ['just a chill guy', 'chillguy'],
+    aliases: ['chill guy', 'just a chill guy', 'chillguy'],
     age: '2024',
     origin: 'X / gray dog meme',
     description:
@@ -110,12 +103,11 @@ export const MEMES = [
     color: '#94a3b8',
     accent: '#334155',
     sigil: 'chill',
-    categories: ['modern', 'animal'],
   },
   {
     id: 'rizz',
     name: 'Rizz',
-    aliases: ['unspoken rizz', 'rizzler'],
+    aliases: ['rizz', 'unspoken rizz', 'rizzler'],
     age: '2022',
     origin: 'Twitch / Kai Cenat / slang',
     description:
@@ -124,7 +116,6 @@ export const MEMES = [
     color: '#c084fc',
     accent: '#6b21a8',
     sigil: 'rizz',
-    categories: ['modern', 'slang'],
   },
   {
     id: 'sigma',
@@ -138,12 +129,11 @@ export const MEMES = [
     color: '#e5e7eb',
     accent: '#111827',
     sigil: 'sigma',
-    categories: ['modern', 'slang'],
   },
   {
     id: 'gyatt',
     name: 'Gyatt',
-    aliases: ['gyat', 'gyatt damn'],
+    aliases: ['gyatt', 'gyat', 'gyatt damn'],
     age: '2023',
     origin: 'Twitch / streaming slang',
     description:
@@ -152,12 +142,11 @@ export const MEMES = [
     color: '#fb923c',
     accent: '#9a3412',
     sigil: 'gyatt',
-    categories: ['modern', 'slang'],
   },
   {
     id: 'fanum-tax',
     name: 'Fanum Tax',
-    aliases: ['fanum', 'tax'],
+    aliases: ['fanum tax', 'fanum'],
     age: '2023',
     origin: 'AMP / Fanum / food-stealing bit',
     description:
@@ -166,12 +155,11 @@ export const MEMES = [
     color: '#facc15',
     accent: '#854d0e',
     sigil: 'tax',
-    categories: ['modern', 'food'],
   },
   {
     id: 'very-demure',
     name: 'Very Demure',
-    aliases: ['demure', 'mindful', 'very mindful'],
+    aliases: ['very demure', 'very mindful'],
     age: '2024',
     origin: 'TikTok / Jools Lebron',
     description:
@@ -180,28 +168,13 @@ export const MEMES = [
     color: '#fda4af',
     accent: '#881337',
     sigil: 'demure',
-    categories: ['modern', 'slang'],
   },
-  {
-    id: 'brat',
-    name: 'Brat',
-    aliases: ['bratsummer', 'charli xcx'],
-    age: '2024',
-    origin: 'Charli XCX / lime-green summer',
-    description:
-      'Lime-green chaos. Yesterday it was a whole season. Today it still has a mean right hook.',
-    yesterdayPopularity: 47,
-    color: '#c6ff4a',
-    accent: '#365314',
-    sigil: 'brat',
-    categories: ['modern', 'music'],
-  },
-
+ 
   // --- Added Memes ---
   {
     id: 'hawk-tuah',
     name: 'Hawk Tuah',
-    aliases: ['hawk tuah girl', 'spit on that thing', 'haliey welch'],
+    aliases: ['hawk tuah', 'hawk tuah girl', 'spit on that thing'],
     age: '2024',
     origin: 'Nashville street interview / TikTok',
     description:
@@ -210,12 +183,11 @@ export const MEMES = [
     color: '#fef08a',
     accent: '#713f12',
     sigil: 'spit',
-    categories: ['modern', 'person'],
   },
   {
     id: 'mewing',
     name: 'Mewing',
-    aliases: ['looksmaxing', 'mogging', 'bye bye', 'jawline'],
+    aliases: ['mewing', 'looksmaxing', 'mogging'],
     age: '2023',
     origin: 'TikTok / Looksmaxxing culture',
     description:
@@ -224,12 +196,11 @@ export const MEMES = [
     color: '#e2e8f0',
     accent: '#1e293b',
     sigil: 'jaw',
-    categories: ['modern', 'slang'],
   },
   {
     id: 'crawly-gnome',
     name: 'Crawly Gnome',
-    aliases: ['crawly', 'mall gnome', 'gnome green'],
+    aliases: ['crawly gnome', 'crawly_gnome', 'mall gnome'],
     age: '2024',
     origin: 'TikTok / Crawly_Gnome',
     description:
@@ -238,12 +209,11 @@ export const MEMES = [
     color: '#4ade80',
     accent: '#14532d',
     sigil: 'gnome',
-    categories: ['modern', 'creature'],
   },
   {
     id: 'john-pork',
     name: 'John Pork',
-    aliases: ['john pork calling', 'pork is calling'],
+    aliases: ['john pork', 'john pork calling'],
     age: '2023',
     origin: 'Virtual Influencer / TikTok horror',
     description:
@@ -252,12 +222,11 @@ export const MEMES = [
     color: '#fbcfe8',
     accent: '#831843',
     sigil: 'phone',
-    categories: ['modern', 'animal'],
   },
   {
     id: 'english-or-spanish',
     name: 'English or Spanish',
-    aliases: ['whoever moves first', 'freeze', 'spanish or english'],
+    aliases: ['english or spanish', 'whoever moves first', 'spanish or english'],
     age: '2024',
     origin: 'Street interviews / TikTok',
     description:
@@ -266,12 +235,11 @@ export const MEMES = [
     color: '#fde047',
     accent: '#713f12',
     sigil: 'statue',
-    categories: ['modern', 'slang'],
   },
   {
     id: 'caseoh',
     name: 'CaseOh',
-    aliases: ['1x1 lego piece', 'banned', 'caseoh weight jokes'],
+    aliases: ['caseoh', '1x1 lego piece'],
     age: '2024',
     origin: 'Twitch / YouTube Shorts',
     description:
@@ -280,12 +248,11 @@ export const MEMES = [
     color: '#fdba74',
     accent: '#7c2d12',
     sigil: 'scale',
-    categories: ['modern', 'person'],
   },
   {
     id: 'smurf-cat',
     name: 'Smurf Cat',
-    aliases: ['we live we love we lie', 'shailushai'],
+    aliases: ['smurf cat', 'we live we love we lie'],
     age: '2023',
     origin: 'TikTok / Alan Walker music / AI art',
     description:
@@ -294,12 +261,11 @@ export const MEMES = [
     color: '#60a5fa',
     accent: '#1e3a8a',
     sigil: 'mushroom',
-    categories: ['modern', 'animal'],
   },
   {
     id: 'pedro-raccoon',
     name: 'Pedro Raccoon',
-    aliases: ['pedro pedro pedro', 'spinning raccoon'],
+    aliases: ['pedro raccoon', 'pedro pedro pedro'],
     age: '2024',
     origin: 'TikTok / Italian disco remix',
     description:
@@ -308,12 +274,11 @@ export const MEMES = [
     color: '#fbbf24',
     accent: '#78350f',
     sigil: 'raccoon',
-    categories: ['modern', 'animal'],
   },
   {
     id: 'costco-guys',
     name: 'Costco Guys',
-    aliases: ['we are costco guys', 'bring the boom', 'big justice', 'double chunk'],
+    aliases: ['costco guys', 'we are costco guys', 'big justice'],
     age: '2024',
     origin: 'TikTok / Big Justice & AJ',
     description:
@@ -322,12 +287,11 @@ export const MEMES = [
     color: '#ef4444',
     accent: '#7f1d1d',
     sigil: 'cookie',
-    categories: ['modern', 'food'],
   },
   {
     id: 'sad-hamster',
     name: 'Sad Hamster',
-    aliases: ['wamp wamp hamster', 'big eyes hamster', 'sad hamster meme'],
+    aliases: ['sad hamster', 'wamp wamp hamster'],
     age: '2024',
     origin: 'TikTok / Spongebob violin audio',
     description:
@@ -336,7 +300,6 @@ export const MEMES = [
     color: '#fed7aa',
     accent: '#7c2d12',
     sigil: 'hamster',
-    categories: ['modern', 'animal'],
   },
   {
     id: 'aura-points',
@@ -350,12 +313,11 @@ export const MEMES = [
     color: '#c084fc',
     accent: '#581c87',
     sigil: 'aura',
-    categories: ['modern', 'slang'],
   },
   {
     id: 'low-taper-fade',
     name: 'Low Taper Fade',
-    aliases: ['ninja low taper fade', 'massive low taper fade', 'imagine if ninja'],
+    aliases: ['low taper fade', 'ninja low taper fade'],
     age: '2024',
     origin: 'TikTok / Eric Ducharme / Ninja meme',
     description:
@@ -364,42 +326,13 @@ export const MEMES = [
     color: '#38bdf8',
     accent: '#0c4a6e',
     sigil: 'fade',
-    categories: ['modern', 'music'],
   },
-
+ 
   // --- Classic / Older Memes ---
-  {
-    id: 'fresh-avocado',
-    name: 'Fr-e-sh Avacado',
-    aliases: ['fresh avocado', 'annoying orange avocado', 'fr e sh avaca do'],
-    age: '2010',
-    origin: 'Annoying Orange / YouTube',
-    description:
-      'A shrieking piece of produce that spells everything out one letter at a time. Ancient, but the ringtone still triggers PTSD.',
-    yesterdayPopularity: 12,
-    color: '#84cc16',
-    accent: '#365314',
-    sigil: 'avocado',
-    categories: ['old', 'food'],
-  },
-  {
-    id: 'jones-bbq',
-    name: 'Jones BBQ and Foot Massage',
-    aliases: ['jones bbq', 'foot massage', 'we got bbq we got foot massage'],
-    age: '2011',
-    origin: 'Local news broadcast meme',
-    description:
-      'A single unforgettable local-news soundbite. Small business, unlimited legendary status.',
-    yesterdayPopularity: 8,
-    color: '#f97316',
-    accent: '#7c2d12',
-    sigil: 'bbq',
-    categories: ['old', 'food'],
-  },
   {
     id: 'rickroll',
     name: 'Rickroll',
-    aliases: ['never gonna give you up', 'rick astley'],
+    aliases: ['rickroll', 'never gonna give you up', 'rick astley'],
     age: '2007',
     origin: 'Bait-and-switch link prank',
     description:
@@ -408,12 +341,11 @@ export const MEMES = [
     color: '#facc15',
     accent: '#713f12',
     sigil: 'rick',
-    categories: ['old', 'person'],
   },
   {
     id: 'nyan-cat',
     name: 'Nyan Cat',
-    aliases: ['pop tart cat', 'rainbow cat'],
+    aliases: ['nyan cat'],
     age: '2011',
     origin: 'YouTube / Flash animation',
     description:
@@ -422,12 +354,11 @@ export const MEMES = [
     color: '#f472b6',
     accent: '#831843',
     sigil: 'rainbow',
-    categories: ['old', 'animal'],
   },
   {
     id: 'trollface',
     name: 'Trollface',
-    aliases: ['troll face', 'problem?'],
+    aliases: ['trollface', 'troll face'],
     age: '2008',
     origin: 'Rage comics / deviantART',
     description:
@@ -436,12 +367,11 @@ export const MEMES = [
     color: '#e5e7eb',
     accent: '#374151',
     sigil: 'trollface',
-    categories: ['old', 'person'],
   },
   {
     id: 'doge',
     name: 'Doge',
-    aliases: ['much wow', 'such meme', 'shiba doge'],
+    aliases: ['doge meme', 'such wow', 'much wow'],
     age: '2013',
     origin: 'Shiba Inu photo / broken-English captions',
     description:
@@ -450,110 +380,11 @@ export const MEMES = [
     color: '#fbbf24',
     accent: '#78350f',
     sigil: 'shiba',
-    categories: ['old', 'animal'],
-  },
-  {
-    id: 'pepe-the-frog',
-    name: 'Pepe the Frog',
-    aliases: ['feels good man', 'sad pepe'],
-    age: '2008',
-    origin: 'Matt Furie comic / forum culture',
-    description:
-      'A comic-book frog that mutated into the internet\u2019s all-purpose reaction face. Ancient, endlessly reposted.',
-    yesterdayPopularity: 22,
-    color: '#4ade80',
-    accent: '#14532d',
-    sigil: 'frog',
-    categories: ['old', 'animal'],
-  },
-  {
-    id: 'keyboard-cat',
-    name: 'Keyboard Cat',
-    aliases: ['play him off', 'keyboard cat meme'],
-    age: '2007',
-    origin: 'YouTube viral video',
-    description:
-      'Plays the timeline off whenever something goes wrong. Retro, reliable, always on beat.',
-    yesterdayPopularity: 10,
-    color: '#facc15',
-    accent: '#713f12',
-    sigil: 'keyboard',
-    categories: ['old', 'animal'],
-  },
-  {
-    id: 'grumpy-cat',
-    name: 'Grumpy Cat',
-    aliases: ['tardar sauce', 'no meme'],
-    age: '2012',
-    origin: 'Reddit / viral cat photo',
-    description:
-      'Permanently unimpressed feline face slapped on every possible caption. Low enthusiasm, high staying power.',
-    yesterdayPopularity: 18,
-    color: '#a3a3a3',
-    accent: '#262626',
-    sigil: 'cat',
-    categories: ['old', 'animal'],
-  },
-  {
-    id: 'harlem-shake',
-    name: 'Harlem Shake',
-    aliases: ['harlem shake meme', 'do the harlem shake'],
-    age: '2013',
-    origin: 'Bauuer song / viral video trend',
-    description:
-      'Fifteen seconds of chaos that took over every classroom and office in 2013. Explosive but very short-lived.',
-    yesterdayPopularity: 14,
-    color: '#f97316',
-    accent: '#7c2d12',
-    sigil: 'dance',
-    categories: ['old', 'music'],
-  },
-  {
-    id: 'gangnam-style',
-    name: 'Gangnam Style',
-    aliases: ['oppa gangnam style', 'psy horse dance'],
-    age: '2012',
-    origin: 'PSY music video',
-    description:
-      'The horse-dance anthem that broke YouTube\u2019s view counter. Global reach, still gets stuck in your head.',
-    yesterdayPopularity: 25,
-    color: '#facc15',
-    accent: '#78350f',
-    sigil: 'horse',
-    categories: ['old', 'music'],
-  },
-  {
-    id: 'success-kid',
-    name: 'Success Kid',
-    aliases: ['i hate sandcastles kid'],
-    age: '2007',
-    origin: 'Original beach photo / advice-animal meme',
-    description:
-      'Clenched fist, tiny toddler, maximum determination. Fuels every "finally did the thing" post since 2007.',
-    yesterdayPopularity: 16,
-    color: '#fde047',
-    accent: '#713f12',
-    sigil: 'fist',
-    categories: ['old', 'person'],
-  },
-  {
-    id: 'bad-luck-brian',
-    name: 'Bad Luck Brian',
-    aliases: ['bad luck brian meme'],
-    age: '2012',
-    origin: 'Yearbook photo / Reddit',
-    description:
-      'A yearbook photo cursed into permanent misfortune. Every setup ends with him losing.',
-    yesterdayPopularity: 9,
-    color: '#ef4444',
-    accent: '#7f1d1d',
-    sigil: 'sweater',
-    categories: ['old', 'person'],
   },
   {
     id: 'this-is-fine-dog',
     name: 'This Is Fine',
-    aliases: ['this is fine dog', 'fire room dog'],
+    aliases: ['this is fine meme', 'this is fine dog'],
     age: '2013',
     origin: 'KC Green webcomic',
     description:
@@ -562,26 +393,11 @@ export const MEMES = [
     color: '#f97316',
     accent: '#7c2d12',
     sigil: 'fire',
-    categories: ['old', 'animal'],
-  },
-  {
-    id: 'distracted-boyfriend',
-    name: 'Distracted Boyfriend',
-    aliases: ['distracted bf', 'guy looking back stock photo'],
-    age: '2017',
-    origin: 'Stock photo turned template',
-    description:
-      'A stock photo that became the internet\u2019s default template for comparing anything to anything.',
-    yesterdayPopularity: 27,
-    color: '#fb7185',
-    accent: '#881337',
-    sigil: 'stockphoto',
-    categories: ['old', 'person'],
   },
   {
     id: 'big-chungus',
     name: 'Big Chungus',
-    aliases: ['chungus', 'thicc bugs bunny'],
+    aliases: ['big chungus', 'chungus'],
     age: '2018',
     origin: 'Bugs Bunny screenshot edit',
     description:
@@ -590,37 +406,284 @@ export const MEMES = [
     color: '#d4d4d8',
     accent: '#3f3f46',
     sigil: 'rabbit',
-    categories: ['old', 'animal'],
+  },
+ 
+  // --- Newer Memes ---
+  {
+    id: 'aura-farming',
+    name: 'Aura Farming',
+    aliases: ['aura farming', 'pacu jalur'],
+    age: '2025',
+    origin: 'TikTok / Pacu Jalur boat dancer',
+    description:
+      'Effortless cool as a full-time job. Grows aura passively while everyone else tries too hard.',
+    yesterdayPopularity: 72,
+    color: '#a78bfa',
+    accent: '#4c1d95',
+    sigil: 'boat',
   },
   {
-    id: 'shooting-stars',
-    name: 'Shooting Stars',
-    aliases: ['bada bum bum bum', 'shooting stars meme'],
-    age: '2018',
-    origin: 'Bag Raiders song / video edit trend',
+    id: 'sigma-boy',
+    name: 'Sigma Boy',
+    aliases: ['sigma boy', 'sigma sigma boy'],
+    age: '2025',
+    origin: 'Russian-language TikTok audio',
     description:
-      'Four notes of cosmic synth that instantly turn any clip into an epic highlight reel.',
-    yesterdayPopularity: 21,
-    color: '#818cf8',
-    accent: '#312e81',
-    sigil: 'star',
-    categories: ['old', 'music'],
+      'A catchy duet that turned every group photo into a sigma showdown. Hard to un-hear.',
+    yesterdayPopularity: 60,
+    color: '#e879f9',
+    accent: '#701a75',
+    sigil: 'duet',
+  },
+  {
+    id: 'steal-a-brainrot',
+    name: 'Steal a Brainrot',
+    aliases: ['steal a brainrot', 'steal a brain rot'],
+    age: '2025',
+    origin: 'Roblox',
+    description:
+      'A Roblox game where the whole point is snatching brainrot characters from other players. Chaotic and very stealable.',
+    yesterdayPopularity: 66,
+    color: '#f472b6',
+    accent: '#831843',
+    sigil: 'steal',
+  },
+  {
+    id: 'sprunki',
+    name: 'Sprunki',
+    aliases: ['sprunki', 'incredibox sprunki'],
+    age: '2024',
+    origin: 'Incredibox mod / YouTube',
+    description:
+      'Beat-making critters that got weirdly dark and weirdly huge. A mod that outgrew its parent game.',
+    yesterdayPopularity: 40,
+    color: '#facc15',
+    accent: '#422006',
+    sigil: 'beat',
+  },
+  {
+    id: 'chicken-jockey',
+    name: 'Chicken Jockey',
+    aliases: ['chicken jockey', 'i am steve', 'flint and steel meme'],
+    age: '2025',
+    origin: 'A Minecraft Movie',
+    description:
+      'A movie scene that made theaters throw popcorn and shout. Fast, loud, and very on brand.',
+    yesterdayPopularity: 55,
+    color: '#84cc16',
+    accent: '#365314',
+    sigil: 'chicken',
+  },
+  {
+    id: 'kpop-demon-hunters',
+    name: 'KPop Demon Hunters',
+    aliases: ['kpop demon hunters', 'k-pop demon hunters', 'huntrix', 'golden huntrix'],
+    age: '2025',
+    origin: 'Netflix animated film',
+    description:
+      'A pop group that fights demons and topped the charts doing it. Catchy enough to carry a whole fandom.',
+    yesterdayPopularity: 85,
+    color: '#f0abfc',
+    accent: '#86198f',
+    sigil: 'huntrix',
+  },
+  {
+    id: 'clanker',
+    name: 'Clanker',
+    aliases: ['clanker', 'clankers'],
+    age: '2025',
+    origin: 'Star Wars slang / anti-AI internet',
+    description:
+      'A sci-fi insult for robots turned real-world slang for AI. Mostly used ironically, sometimes not.',
+    yesterdayPopularity: 58,
+    color: '#94a3b8',
+    accent: '#1e293b',
+    sigil: 'robot',
+  },
+  {
+    id: 'rage-bait',
+    name: 'Rage Bait',
+    aliases: ['rage bait', 'ragebait', 'rage baiting'],
+    age: '2025',
+    origin: 'Internet slang / engagement farming',
+    description:
+      'Content built to make you angry enough to comment. Feeds on your replies.',
+    yesterdayPopularity: 57,
+    color: '#f87171',
+    accent: '#7f1d1d',
+    sigil: 'bait',
+  },
+  {
+    id: 'ghibli-ai',
+    name: 'Ghibli AI',
+    aliases: ['ghibli style', 'ghiblify', 'studio ghibli ai'],
+    age: '2025',
+    origin: 'AI image generation trend',
+    description:
+      'Every photo turned into a soft Ghibli-style frame. Wholesome aesthetic, controversial method.',
+    yesterdayPopularity: 30,
+    color: '#86efac',
+    accent: '#166534',
+    sigil: 'ghibli',
+  },
+  {
+    id: 'ai-action-figure',
+    name: 'AI Action Figure',
+    aliases: ['ai action figure', 'action figure trend'],
+    age: '2025',
+    origin: 'AI image trend / LinkedIn',
+    description:
+      'Yourself as a boxed toy with tiny accessories. Peak self-promotion, minimal poseability.',
+    yesterdayPopularity: 22,
+    color: '#fb923c',
+    accent: '#7c2d12',
+    sigil: 'figure',
+  },
+  {
+    id: 'silksong',
+    name: 'Silksong',
+    aliases: ['silksong', 'hollow knight silksong'],
+    age: '2025',
+    origin: 'Team Cherry / gaming',
+    description:
+      'The sequel everyone joked would never come out, until it did. Years of waiting turned into legend.',
+    yesterdayPopularity: 50,
+    color: '#f43f5e',
+    accent: '#4c0519',
+    sigil: 'needle',
+  },
+  {
+    id: 'dubai-chocolate',
+    name: 'Dubai Chocolate',
+    aliases: ['dubai chocolate', 'kunafa chocolate'],
+    age: '2024',
+    origin: 'TikTok / food trend',
+    description:
+      'Pistachio and crunchy kunafa in a chocolate bar. Expensive, crunchy, and everywhere.',
+    yesterdayPopularity: 45,
+    color: '#a16207',
+    accent: '#422006',
+    sigil: 'chocolate',
+  },
+  {
+    id: 'ambatukam',
+    name: 'Ambatukam',
+    aliases: ['ambatukam', 'ambasing'],
+    age: '2023',
+    origin: 'Indonesian TikTok / Dreamybull',
+    description:
+      'A name-shout meme with a very specific ending. Old-school brainrot that still gets a laugh.',
+    yesterdayPopularity: 35,
+    color: '#fbbf24',
+    accent: '#78350f',
+    sigil: 'shout',
+  },
+  {
+    id: 'jet2-holiday',
+    name: 'Jet2 Holiday',
+    aliases: ['jet2 holiday', 'nothing beats a jet2 holiday'],
+    age: '2023',
+    origin: 'UK TikTok / Jet2 ad',
+    description:
+      'A holiday ad slogan turned into a chant. Nothing beats it, apparently.',
+    yesterdayPopularity: 28,
+    color: '#ef4444',
+    accent: '#7f1d1d',
+    sigil: 'plane',
+  },
+  {
+    id: 'apt-apt',
+    name: 'APT.',
+    aliases: ['apt apt', 'rose apt', 'apt. rose'],
+    age: '2024',
+    origin: 'Rosé & Bruno Mars',
+    description:
+      'A drinking-game chant that became a global earworm. Impossible to stop singing once started.',
+    yesterdayPopularity: 48,
+    color: '#fb7185',
+    accent: '#881337',
+    sigil: 'apt',
+  },
+  {
+    id: 'pesto-penguin',
+    name: 'Pesto the Penguin',
+    aliases: ['pesto penguin', 'pesto the penguin'],
+    age: '2024',
+    origin: 'Sea Life Melbourne / TikTok',
+    description:
+      'A very large, very fluffy baby penguin who became an aquarium celebrity. Big presence, mostly past his peak.',
+    yesterdayPopularity: 20,
+    color: '#cbd5e1',
+    accent: '#334155',
+    sigil: 'penguin',
+  },
+  {
+    id: 'justice-for-peanut',
+    name: 'Justice for Peanut',
+    aliases: ['peanut the squirrel', 'justice for peanut'],
+    age: '2024',
+    origin: 'X / Peanut the squirrel',
+    description:
+      'A pet squirrel story that turned into a rallying cry. Small rodent, big outrage.',
+    yesterdayPopularity: 22,
+    color: '#d97706',
+    accent: '#451a03',
+    sigil: 'squirrel',
+  },
+  {
+    id: 'crashout',
+    name: 'Crashout',
+    aliases: ['crash out', 'crashing out', 'crashout'],
+    age: '2025',
+    origin: 'Slang / Twitter',
+    description:
+      'A full emotional meltdown, usually over something small. Loud, dramatic, and a little unhinged.',
+    yesterdayPopularity: 63,
+    color: '#ef4444',
+    accent: '#450a0a',
+    sigil: 'crash',
+  },
+  {
+    id: 'yapper',
+    name: 'Yapper',
+    aliases: ['yapper', 'yapping meme', 'professional yapper'],
+    age: '2023',
+    origin: 'Slang / TikTok / Twitch',
+    description:
+      'Someone who talks nonstop with no clear point. Stamina bar never empties.',
+    yesterdayPopularity: 46,
+    color: '#fde68a',
+    accent: '#78350f',
+    sigil: 'yap',
+  },
+  {
+    id: 'duolingo-owl',
+    name: 'Duolingo Owl',
+    aliases: ['duolingo owl', 'duo owl', 'duolingo threat'],
+    age: '2023',
+    origin: 'Duolingo / TikTok',
+    description:
+      'A green owl that will hunt you if you skip your lesson. Passive-aggressive notifications, permanent guilt.',
+    yesterdayPopularity: 54,
+    color: '#58cc02',
+    accent: '#1f4d00',
+    sigil: 'owl',
   },
 ]
-
+ 
 export function searchMemes(query) {
   const q = query.trim().toLowerCase()
   if (!q) return MEMES
   return MEMES.filter((meme) => {
-    const hay = `${meme.name} ${meme.aliases.join(' ')} ${meme.origin} ${(meme.categories || []).join(' ')}`.toLowerCase()
+    const hay = `${meme.name} ${meme.aliases.join(' ')} ${meme.origin}`.toLowerCase()
     return hay.includes(q)
   })
 }
-
+ 
 export function getMemeById(id) {
   return MEMES.find((meme) => meme.id === id) ?? null
 }
-
+ 
 export function memeDossier(meme) {
   const heat = meme.yesterdayPopularity ?? 50
   let peak = `${meme.age} breakout`
@@ -628,7 +691,7 @@ export function memeDossier(meme) {
   else if (heat >= 60) peak = `${meme.age} boom, still circulating (${heat}/100)`
   else if (heat >= 35) peak = `${meme.age} peak, mid revival (${heat}/100)`
   else peak = `${meme.age} peak, currently washed (${heat}/100)`
-
+ 
   return {
     age: meme.age,
     origin: meme.origin,

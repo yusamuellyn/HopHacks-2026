@@ -13,7 +13,7 @@ MEME_SEARCH_TERMS = {
     "gyatt": ["gyatt", "gyat", "gyatt damn"],
     "fanum-tax": ["fanum tax", "fanum"],
     "very-demure": ["very demure", "very mindful"],  # dropped bare "demure" — real English word, huge false-positive rate
-    "brat": ["bratsummer", "brat summer"],  # dropped bare "brat" — real English word (unruly child), matches unrelated tweets constantly
+
 
     # Added Memes
     "hawk-tuah": ["hawk tuah", "hawk tuah girl", "spit on that thing"],
@@ -30,21 +30,32 @@ MEME_SEARCH_TERMS = {
     "low-taper-fade": ["low taper fade", "ninja low taper fade"],
 
     # ...existing entries...
-    "fresh-avocado": ["fresh avocado", "annoying orange avocado"],
-    "jones-bbq": ["jones bbq"],  # dropped "foot massage" — extremely generic, unrelated in almost all real usage
     "rickroll": ["rickroll", "never gonna give you up", "rick astley"],
     "nyan-cat": ["nyan cat"],
     "trollface": ["trollface", "troll face"],
     "doge": ["doge meme", "such wow", "much wow"],  # dropped bare "doge" — "dog" trigram is extremely common
-    "pepe-the-frog": ["pepe the frog", "feels good man"],
-    "keyboard-cat": ["keyboard cat"],
-    "grumpy-cat": ["grumpy cat", "tardar sauce"],
-    "harlem-shake": ["harlem shake"],
-    "gangnam-style": ["gangnam style"],
-    "success-kid": ["success kid"],
-    "bad-luck-brian": ["bad luck brian"],
     "this-is-fine-dog": ["this is fine meme", "this is fine dog"],  # dropped bare "this is fine" — common English sentence
-    "distracted-boyfriend": ["distracted boyfriend"],
     "big-chungus": ["big chungus", "chungus"],
-    "shooting-stars": ["bada bum bum bum", "shooting stars meme"],  # dropped bare "shooting stars" — common phrase (astronomy, general use)
+
+    "aura-farming": ["aura farming", "pacu jalur"],
+    "sigma-boy": ["sigma boy", "sigma sigma boy"],
+    "steal-a-brainrot": ["steal a brainrot", "steal a brain rot"],
+    "sprunki": ["sprunki", "incredibox sprunki"],
+    "chicken-jockey": ["chicken jockey", "i am steve", "flint and steel meme"],  # Minecraft Movie
+    "kpop-demon-hunters": ["kpop demon hunters", "k-pop demon hunters", "huntrix", "golden huntrix"],
+    "clanker": ["clanker", "clankers"],
+    "rage-bait": ["rage bait", "ragebait", "rage baiting"],
+    "ghibli-ai": ["ghibli style", "ghiblify", "studio ghibli ai"],
+    "ai-action-figure": ["ai action figure", "action figure trend"],
+    "silksong": ["silksong", "hollow knight silksong"],
+    "dubai-chocolate": ["dubai chocolate", "kunafa chocolate"],
+    "ambatukam": ["ambatukam", "ambasing"],
+    "jet2-holiday": ["jet2 holiday", "nothing beats a jet2 holiday"],
+    "apt-apt": ["apt apt", "rose apt", "apt. rose"],
+    "pesto-penguin": ["pesto penguin", "pesto the penguin"],
+    "justice-for-peanut": ["peanut the squirrel", "justice for peanut"],
+    "crashout": ["crash out", "crashing out", "crashout"],
+    "yapper": ["yapper", "yapping meme", "professional yapper"],
+    "duolingo-owl": ["duolingo owl", "duo owl", "duolingo threat"],
+
 }
