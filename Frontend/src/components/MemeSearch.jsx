@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { searchMemes } from '../data/memes.js'
-import { announcePick } from '../lib/api.js'
 import { useSfx } from '../lib/sfx.jsx'
 
 export default function MemeSearch({
@@ -34,6 +33,17 @@ export default function MemeSearch({
     document.addEventListener('click', onDocClick)
     return () => document.removeEventListener('click', onDocClick)
   }, [])
+
+  function announcePick(memeName) {
+    fetch('/api/announce-pick', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ memeName }),
+    })
+      .then((res) => res.blob())
+      .then((blob) => new Audio(URL.createObjectURL(blob)).play())
+      .catch((err) => console.error('Announcer pick failed', err))
+  }
 
   function clearPick() {
     onSelect(null)

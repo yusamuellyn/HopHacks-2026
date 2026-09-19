@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { announceStart, announceWinner, fetchBattleTotals } from '../lib/api.js'
 import { startBattle } from '../lib/battleEngine.js'
 import { useFx } from '../lib/fx.jsx'
 import { useSfx } from '../lib/sfx.jsx'
@@ -116,7 +115,15 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
     setFrame(null)
     setFeed([])
     setResult(null)
-    fetchBattleTotals(left.id, right.id)
+    fetch('/api/battle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ leftId: left.id, rightId: right.id }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Battle lookup failed')
+        return res.json()
+      })
       .then((data) => {
         if (!cancelled) setTotals(data)
       })
@@ -148,7 +155,14 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
     if (!announcedStart.current) {
       announcedStart.current = true
       sfxRef.current.play('startBell')
-      announceStart(left.name, right.name)
+      fetch('/api/announce-start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leftName: left.name, rightName: right.name }),
+      })
+        .then((res) => res.blob())
+        .then((blob) => new Audio(URL.createObjectURL(blob)).play())
+        .catch((err) => console.error('Announcer intro failed', err))
     }
 
     const stop = startBattle({
@@ -252,7 +266,17 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
         onBattleEnd(payload)
         sfxRef.current.play('finishFanfare')
 
-        announceWinner(finalResult.winner.name, Math.round(finalResult.winnerShare))
+        fetch('/api/announce-winner', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            winnerName: finalResult.winner.name,
+            pct: Math.round(finalResult.winnerShare),
+          }),
+        })
+          .then((res) => res.blob())
+          .then((blob) => new Audio(URL.createObjectURL(blob)).play())
+          .catch((err) => console.error('Winner announcement failed', err))
       },
     })
     return () => {
