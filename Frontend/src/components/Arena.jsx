@@ -83,6 +83,7 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
   const [rates, setRates] = useState({ left: 0, right: 0 })
   const [shot, setShot] = useState(null)
   const [throwSide, setThrowSide] = useState(null)
+  const [swing, setSwing] = useState(null)
   const [totals, setTotals] = useState(null)
   const [loadError, setLoadError] = useState(null)
   const seenEaster = useRef(new Set())
@@ -147,6 +148,7 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
     setMaxCombos({ left: 0, right: 0 })
     setCombos({ left: 0, right: 0 })
     setFeed([])
+    setSwing(null)
     setRates({
       left: Math.round((totals.leftTotal / (FIGHT_MS / 1000)) * 60),
       right: Math.round((totals.rightTotal / (FIGHT_MS / 1000)) * 60),
@@ -180,6 +182,8 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
         if (!next.event) return
 
         setFeed((lines) => [next.event, ...lines].slice(0, 18))
+        setSwing(next.event.side)
+        window.setTimeout(() => setSwing((side) => (side === next.event.side ? null : side)), 240)
 
         const attacker = next.event.side
         const defender = attacker === 'left' ? 'right' : 'left'
@@ -382,7 +386,7 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
           <div className="fighter-scale">
             <FighterPortrait meme={left} mood={leftMood} state={leftState} />
           </div>
-          <b>{Math.round(leftShare)}%</b>
+          <b className={swing === 'left' ? 'is-swing' : ''}>{Math.round(leftShare)}%</b>
         </div>
         <strong className="arena__vs" aria-hidden="true">
           VS
@@ -403,7 +407,7 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
           <div className="fighter-scale">
             <FighterPortrait meme={right} mood={rightMood} state={rightState} />
           </div>
-          <b>{Math.round(rightShare)}%</b>
+          <b className={swing === 'right' ? 'is-swing' : ''}>{Math.round(rightShare)}%</b>
         </div>
       </div>
 

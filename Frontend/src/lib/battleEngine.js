@@ -9,6 +9,10 @@ export function sharesFromCounts(leftMentions, rightMentions) {
   return { leftShare, rightShare: 100 - leftShare }
 }
 
+function clamp(n, lo, hi) {
+  return Math.min(hi, Math.max(lo, n))
+}
+
 function pick(list) {
   return list[Math.floor(Math.random() * list.length)]
 }
@@ -50,6 +54,20 @@ function pickAttacker(leftPower, rightPower) {
   return Math.random() < leftPower / total ? 'left' : 'right'
 }
 
+function hitSwing(combo, attackerPower, defenderPower) {
+  const total = attackerPower + defenderPower
+  const strength = total > 0 ? attackerPower / total : 0.5
+  const comboBoost = Math.min(combo, 7) * 1.75
+  return (3.8 + comboBoost) * (0.52 + strength * 0.9) * (0.86 + Math.random() * 0.28)
+}
+
+function settleAmount(progress) {
+  const p = clamp(progress, 0, 1)
+  // Keep most of the fight on hit/combo swings, then lock to the real mention share.
+  if (p < 0.7) return p * 0.22
+  return 0.154 + Math.pow((p - 0.7) / 0.3, 1.15) * 0.846
+}
+
 export function startBattle({
   left,
   right,
@@ -67,6 +85,7 @@ export function startBattle({
   const started = performance.now()
   const leftPower = Math.max(0.35, leftTotal + leftYesterday * 0.35)
   const rightPower = Math.max(0.35, rightTotal + rightYesterday * 0.35)
+  const trueShares = sharesFromCounts(leftTotal, rightTotal)
   let lastAttack = started - attackMs + 220
   let lastEmit = 0
   let lastSide = null
@@ -74,12 +93,23 @@ export function startBattle({
   let cancelled = false
   let finished = false
   let frameId = 0
+  let lastTime = started
+  let momentum = 50
+  let pulse = 0
+
+  const liveShares = (elapsed) => {
+    const progress = Math.min(1, elapsed / durationMs)
+    const settle = settleAmount(progress)
+    const mixed = momentum * (1 - settle) + trueShares.leftShare * settle
+    const leftShare = clamp(mixed + pulse * (1 - settle), 4, 96)
+    return { leftShare, rightShare: 100 - leftShare }
+  }
 
   const snapshot = (elapsed, event = null) => {
     const progress = Math.min(1, elapsed / durationMs)
     const leftExact = leftTotal * progress
     const rightExact = rightTotal * progress
-    const shares = sharesFromCounts(leftExact, rightExact)
+    const shares = liveShares(elapsed)
     return {
       elapsed,
       remainingMs: Math.max(0, durationMs - elapsed),
@@ -109,7 +139,7 @@ export function startBattle({
     if (finished || cancelled) return
     finished = true
     cancelAnimationFrame(frameId)
-    const shares = sharesFromCounts(leftTotal, rightTotal)
+    const shares = trueShares
     const leftWins = leftTotal >= rightTotal
     onFinish({
       ...snapshot(durationMs),
@@ -135,6 +165,9 @@ export function startBattle({
   const tick = (now) => {
     if (cancelled || finished) return
     const elapsed = now - started
+    const dt = Math.max(0, (now - lastTime) / 1000)
+    lastTime = now
+    pulse *= Math.exp(-dt * 3.4)
     let event = null
 
     if (elapsed < durationMs && now - lastAttack >= attackMs) {
@@ -145,10 +178,17 @@ export function startBattle({
       const attacker = side === 'left' ? left : right
       const defender = side === 'left' ? right : left
       const lead = side === 'left' ? leftPower >= rightPower : rightPower >= leftPower
+      const attackerPower = side === 'left' ? leftPower : rightPower
+      const defenderPower = side === 'left' ? rightPower : leftPower
+      const delta = hitSwing(combo, attackerPower, defenderPower)
+      const signed = side === 'left' ? delta : -delta
+      momentum = clamp(momentum + signed, 8, 92)
+      pulse = signed * 0.55
       event = {
         id: `${Math.round(elapsed)}-${side}-${combo}`,
         side,
         combo,
+        delta,
         text: commentaryFor({ attacker, defender, combo, lead }),
       }
     }

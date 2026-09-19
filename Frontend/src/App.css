@@ -533,7 +533,7 @@
 
 .health__left {
   height: 100%;
-  transition: width 280ms ease;
+  transition: width 420ms cubic-bezier(0.22, 0.8, 0.2, 1);
   background: var(--cyan);
 }
 
@@ -548,7 +548,7 @@
   padding: 4px 8px;
   border: 3px solid var(--line);
   border-radius: 999px;
-  transition: left 280ms ease;
+  transition: left 420ms cubic-bezier(0.22, 0.8, 0.2, 1);
 }
 
 .arena__stage {
@@ -583,6 +583,13 @@
 .fighter-stage b {
   font-family: var(--display);
   font-size: clamp(36px, 5vh, 52px);
+  font-variant-numeric: tabular-nums;
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+.fighter-stage b.is-swing {
+  transform: scale(1.16);
+  color: var(--gold);
 }
 
 .arena__vs {
