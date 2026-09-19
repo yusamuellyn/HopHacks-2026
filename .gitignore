@@ -1,0 +1,5 @@
+twitter-firehose/*.parquet
+*.csv
+.env
+venv/
+node_modules/

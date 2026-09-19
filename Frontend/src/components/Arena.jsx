@@ -177,6 +177,17 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
     feedRef.current?.scrollTo({ top: 0 })
   }, [feed])
 
+  useEffect(() => {
+    fetch('http://localhost:8000/api/battle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ leftId: left.id, rightId: right.id }),
+    })
+      .then((res) => res.json())
+      .then((data) => console.log('Backend received picks:', data))
+      .catch((err) => console.error('Failed to send picks', err))
+  }, [left, right])
+
   const leftShare = frame?.left.share ?? 50
   const rightShare = frame?.right.share ?? 50
   const remaining = Math.ceil((frame?.remainingMs ?? 19000) / 1000)
