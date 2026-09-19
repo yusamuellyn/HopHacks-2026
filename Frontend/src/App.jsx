@@ -3,13 +3,18 @@ import Arena from './components/Arena.jsx'
 import CharacterSelect from './components/CharacterSelect.jsx'
 import StageBackdrop from './components/StageBackdrop.jsx'
 import { FxProvider } from './lib/fx.jsx'
+import { SfxProvider } from './lib/sfx.jsx'
+import SfxLab from './components/SfxLab.jsx'
+import { setMusicTrack, unlockMusic, stopMusic } from './lib/music.js'
 import { loadStats, recordBattle } from './lib/stats.js'
 import './App.css'
 
 export default function App() {
   return (
     <FxProvider>
-      <AppShell />
+      <SfxProvider>
+        <AppShell />
+      </SfxProvider>
     </FxProvider>
   )
 }
@@ -37,8 +42,19 @@ function AppShell() {
     window.scrollTo(0, 0)
   }, [screen])
 
+  useEffect(() => {
+    if (screen === 'select') setMusicTrack('title')
+  }, [screen])
+
+  useEffect(() => {
+    return () => stopMusic()
+  }, [])
+
   return (
-    <div className={`app-shell app-shell--${screen}`}>
+    <div
+      className={`app-shell app-shell--${screen}`}
+      onPointerDown={unlockMusic}
+    >
       {screen === 'select' ? (
         <>
           <StageBackdrop mode="select" />
@@ -67,6 +83,7 @@ function AppShell() {
           }}
         />
       )}
+      <SfxLab />
     </div>
   )
 }

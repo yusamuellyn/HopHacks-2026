@@ -1,3 +1,5 @@
+import { memePhoto } from '../lib/memeArt.js'
+
 function paths(sigil) {
   switch (sigil) {
     case 'drum':
@@ -111,14 +113,19 @@ export function memeGlyph(meme) {
 }
 
 export default function FighterPortrait({ meme, mood, state = 'idle', bare = false }) {
+  const photo = memePhoto(meme)
   return (
     <div
-      className={`portrait portrait--${mood} portrait--${state}`}
+      className={`portrait portrait--${mood} portrait--${state} ${photo ? 'portrait--photo' : ''}`}
       style={{ '--meme': meme.color, '--meme-accent': meme.accent }}
     >
-      <svg viewBox="0 0 120 130" aria-hidden="true">
-        <g fill="currentColor">{paths(meme.sigil)}</g>
-      </svg>
+      {photo ? (
+        <img src={photo} alt="" draggable="false" />
+      ) : (
+        <svg viewBox="0 0 120 130" aria-hidden="true">
+          <g fill="currentColor">{paths(meme.sigil)}</g>
+        </svg>
+      )}
       {!bare && mood === 'champion' && <div className="portrait__belt">CHAMPION</div>}
       {!bare && mood === 'washed' && <div className="portrait__sign">WASHED</div>}
       {!bare && mood === 'homeless' && <div className="portrait__sign">TIRED</div>}

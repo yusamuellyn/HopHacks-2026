@@ -1,7 +1,7 @@
 const SCENES = [
   { id: 'phone', src: '/zoom/zoom-phone.png?v=toon' },
   { id: 'desk', src: '/zoom/zoom-desk.png?v=toon' },
-  { id: 'house', src: '/zoom/zoom-house.png?v=toon' },
+  { id: 'city', src: '/zoom/zoom-city.png?v=city' },
   { id: 'country', src: '/zoom/zoom-country.png?v=toon' },
   { id: 'earth', src: '/zoom/zoom-earth.png?v=toon' },
 ]
