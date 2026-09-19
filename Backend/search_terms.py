@@ -1,4 +1,5 @@
 MEME_SEARCH_TERMS = {
+    # Original Base
     "tung-tung-tung-sahur": ["tung tung tung sahur", "tung tung", "sahur"],
     "skibidi-toilet": ["skibidi toilet", "skibidi"],
     "ohio": ["only in ohio", "ohio meme"],
@@ -13,4 +14,18 @@ MEME_SEARCH_TERMS = {
     "fanum-tax": ["fanum tax", "fanum"],
     "very-demure": ["very demure", "demure", "very mindful"],
     "brat": ["brat", "bratsummer"],
+
+    # Added Memes
+    "hawk-tuah": ["hawk tuah", "hawk tuah girl", "spit on that thing"],
+    "mewing": ["mewing", "looksmaxing", "mogging"],
+    "crawly-gnome": ["crawly gnome", "crawly_gnome", "mall gnome"],
+    "john-pork": ["john pork", "john pork calling"],
+    "english-or-spanish": ["english or spanish", "whoever moves first", "spanish or english"],
+    "caseoh": ["caseoh", "1x1 lego piece"],
+    "smurf-cat": ["smurf cat", "we live we love we lie"],
+    "pedro-raccoon": ["pedro raccoon", "pedro pedro pedro"],
+    "costco-guys": ["costco guys", "we are costco guys", "big justice"],
+    "sad-hamster": ["sad hamster", "wamp wamp hamster"],
+    "aura-points": ["aura points", "plus aura", "minus aura"],
+    "low-taper-fade": ["low taper fade", "ninja low taper fade"],
 }
