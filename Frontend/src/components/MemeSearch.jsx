@@ -28,11 +28,22 @@ export default function MemeSearch({
     document.addEventListener('mousedown', onDocClick)
     return () => document.removeEventListener('mousedown', onDocClick)
   }, [])
+  function announcePick(memeName){
+    fetch('http://localhost:8000/api/announce-pick', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ memeName }),
+  })
+    .then((res) => res.blob())
+    .then((blob) => new Audio(URL.createObjectURL(blob)).play())
+    .then((err) => console.error('Announcer pick failed', err))
+  }
 
   function choose(meme) {
     onSelect(meme)
     setQuery(meme.name)
     setOpen(false)
+    announcePick(meme.name)
   }
 
   function onKeyDown(event) {
