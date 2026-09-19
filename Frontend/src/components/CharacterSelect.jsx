@@ -1,15 +1,10 @@
 import FighterSlot from './FighterSlot.jsx'
 import MemeSearch from './MemeSearch.jsx'
-
-
-const METRICS = ['mentions', 'likes', 'retweets', 'views', 'replies']
-
-function pickRandomMetric() {
-  return METRICS[Math.floor(Math.random() * METRICS.length)]
-}
+import { formatDay } from '../lib/stats.js'
 
 export default function CharacterSelect({ left, right, stats, onSelectLeft, onSelectRight, onStart }) {
   const ready = Boolean(left && right)
+  const yesterday = formatDay(stats?.window?.yesterday)
 
   return (
     <div className="select-screen">
@@ -17,6 +12,9 @@ export default function CharacterSelect({ left, right, stats, onSelectLeft, onSe
         <p className="eyebrow">HopHacks 2026 · Memetics</p>
         <h1 className="hero-title">MEME ARENA</h1>
         <p className="tagline">Two memes enter. The timeline decides.</p>
+        {yesterday && (
+          <p className="window-note">Yesterday searches from {yesterday} · records saved to the arena</p>
+        )}
       </header>
 
       <div className="select-row">
@@ -48,8 +46,7 @@ export default function CharacterSelect({ left, right, stats, onSelectLeft, onSe
         />
       </div>
 
-      
-      <button type="button" className="start-btn" disabled={!ready} onClick={onStart}>
+      <button type="button" className="start-btn" disabled={!ready} onClick={() => onStart()}>
         {ready ? 'START BATTLE' : 'PICK TWO FIGHTERS'}
       </button>
     </div>
