@@ -30,29 +30,22 @@ def get_conn():
 
 @app.post("/api/battle")
 def battle(payload: BattleRequest):
-    left_terms = MEME_SEARCH_TERMS.get(payload.leftId)
-    right_terms = MEME_SEARCH_TERMS.get(payload.rightId)
-
-    if not left_terms or not right_terms:
-        raise HTTPException(status_code=400, detail="Unknown meme id")
-
     conn = get_conn()
     cur = conn.cursor()
 
-    # meme_mentions is precomputed by build_mentions.py (one row per
-    # meme/tweet pair), so this is an index lookup instead of a 29M-row scan.
     cur.execute("""
-        SELECT
-            count(*) FILTER (WHERE meme_id = %s) AS left_total,
-            count(*) FILTER (WHERE meme_id = %s) AS right_total
+        SELECT meme_id, count(*)
         FROM meme_mentions
         WHERE meme_id IN (%s, %s)
-    """, [payload.leftId, payload.rightId, payload.leftId, payload.rightId])
+        GROUP BY meme_id
+    """, [payload.leftId, payload.rightId])
 
-    left_total, right_total = cur.fetchone()
+    counts = dict(cur.fetchall())
     cur.close()
     conn.close()
 
+    left_total = counts.get(payload.leftId, 0)
+    right_total = counts.get(payload.rightId, 0)
     winner = payload.leftId if left_total >= right_total else payload.rightId
 
     return {
