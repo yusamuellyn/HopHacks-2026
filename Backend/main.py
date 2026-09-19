@@ -334,17 +334,9 @@ def battle(payload: BattleRequest):
     left_params = [f"%{t}%" for t in left_terms]
     right_params = [f"%{t}%" for t in right_terms]
 
-    # SQL below uses {left_conditions} 3 times and {right_conditions} 3 times,
-    # in this exact order: count-left, count-right, sum-left, sum-right,
-    # where-left, where-right. Params must repeat in the same order/count.
-    params = (
-        left_params    # count left
-        + right_params # count right
-        + left_params  # sum left
-        + right_params # sum right
-        + left_params  # WHERE left
-        + right_params # WHERE right
-    )
+    # Each condition now appears exactly once: in the CTE's SELECT (to tag
+    # matches), and once in the CTE's WHERE (to pull in only relevant rows).
+    params = left_params + right_params + left_params + right_params
 
     with db() as conn:
         cur = conn.cursor()
@@ -352,18 +344,26 @@ def battle(payload: BattleRequest):
             f"""
             WITH bounds AS (
                 SELECT max(created_at) AS latest FROM tweets
+            ),
+            matches AS (
+                SELECT
+                    id,
+                    created_at,
+                    ({left_conditions}) AS is_left,
+                    ({right_conditions}) AS is_right
+                FROM tweets
+                WHERE ({left_conditions}) OR ({right_conditions})
             )
             SELECT
-                count(DISTINCT id) FILTER (WHERE {left_conditions}) AS left_total,
-                count(DISTINCT id) FILTER (WHERE {right_conditions}) AS right_total,
+                count(DISTINCT id) FILTER (WHERE is_left) AS left_total,
+                count(DISTINCT id) FILTER (WHERE is_right) AS right_total,
                 coalesce(sum(exp(-{DECAY_LAMBDA} * extract(epoch FROM (
                     (SELECT latest FROM bounds) - created_at
-                )))) FILTER (WHERE {left_conditions}), 0) AS left_score,
+                )))) FILTER (WHERE is_left), 0) AS left_score,
                 coalesce(sum(exp(-{DECAY_LAMBDA} * extract(epoch FROM (
                     (SELECT latest FROM bounds) - created_at
-                )))) FILTER (WHERE {right_conditions}), 0) AS right_score
-            FROM tweets
-            WHERE ({left_conditions}) OR ({right_conditions})
+                )))) FILTER (WHERE is_right), 0) AS right_score
+            FROM matches
             """,
             params,
         )
