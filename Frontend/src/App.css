@@ -2100,3 +2100,19 @@
   background: #ff4b6e;
   color: #fff;
 }
+
+.recap-history ul {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.recap-history li {
+  aspect-ratio: auto;
+  min-height: 0;
+  height: auto !important;
+  display: block;
+  text-align: left;
+  font-size: 14px;
+  padding: 6px 10px !important;
+  line-height: 1.3;
+}
