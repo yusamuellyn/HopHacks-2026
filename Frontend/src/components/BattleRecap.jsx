@@ -222,7 +222,7 @@ function LeaderboardPage({ board, winnerId, stats }) {
               <PlacePlaque place={place} />
               <FighterPortrait meme={row} mood="contender" state="idle" bare />
               <strong className="recap-board__name">{row.name}</strong>
-              <span className="recap-board__stat">{row.dayWins} today</span>
+              <span className="recap-board__stat">{row.dayWins} wins today</span>
               <span className="recap-board__stat recap-board__stat--muted">
                 {row.wins}-{row.losses} record
               </span>
