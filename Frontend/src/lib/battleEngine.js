@@ -1,11 +1,22 @@
-export function sharesFromCounts(leftMentions, rightMentions) {
+export function sharesFromCounts(
+  leftMentions,
+  rightMentions,
+  leftTotal = leftMentions,
+  rightTotal = rightMentions,
+) {
   const left = Math.max(0, leftMentions)
   const right = Math.max(0, rightMentions)
+  const leftAlive = Math.max(0, leftTotal) > 0
+  const rightAlive = Math.max(0, rightTotal) > 0
+
+  if (!leftAlive && !rightAlive) return { leftShare: 50, rightShare: 50 }
+  if (!leftAlive) return { leftShare: 0, rightShare: 100 }
+  if (!rightAlive) return { leftShare: 100, rightShare: 0 }
+
   const total = left + right
-  if (total <= 0) {
-    return { leftShare: 50, rightShare: 50 }
-  }
-  const leftShare = (left / total) * 100
+  if (total <= 0) return { leftShare: 50, rightShare: 50 }
+
+  const leftShare = Math.min(99, Math.max(1, (left / total) * 100))
   return { leftShare, rightShare: 100 - leftShare }
 }
 
@@ -49,12 +60,58 @@ function pickAttacker(leftPower, rightPower, leftDead, rightDead) {
   return Math.random() < leftPower / total ? 'left' : 'right'
 }
 
-function countsAt(elapsed, durationMs, leftTotal, rightTotal) {
-  const progress = Math.min(1, Math.max(0, elapsed / durationMs))
-  return {
-    leftMentions: Math.round(leftTotal * progress),
-    rightMentions: Math.round(rightTotal * progress),
+function buildMentionPath(leftTotal, rightTotal, durationMs) {
+  const leftTarget = Math.max(0, Math.round(leftTotal))
+  const rightTarget = Math.max(0, Math.round(rightTotal))
+  const path = [{ t: 0, left: 0, right: 0 }]
+  if (leftTarget === 0 && rightTarget === 0) {
+    path.push({ t: durationMs, left: 0, right: 0 })
+    return path
   }
+
+  let leftShown = 0
+  let rightShown = 0
+  let t = 80 + Math.random() * 70
+
+  while (t < durationMs - 140 && (leftShown < leftTarget || rightShown < rightTarget)) {
+    const leftRem = leftTarget - leftShown
+    const rightRem = rightTarget - rightShown
+    const beatsLeft = Math.max(1, Math.round((durationMs - t) / 210))
+    const pickLeft =
+      leftRem > 0 && (rightRem <= 0 || Math.random() < leftRem / (leftRem + rightRem))
+    const rem = pickLeft ? leftRem : rightRem
+    const cap = Math.max(1, Math.round((pickLeft ? leftTarget : rightTarget) * 0.09))
+    const gain = Math.min(rem, cap, Math.max(1, Math.round((rem / beatsLeft) * (0.7 + Math.random() * 0.55))))
+
+    if (pickLeft) leftShown += gain
+    else rightShown += gain
+
+    const otherRem = pickLeft ? rightTarget - rightShown : leftTarget - leftShown
+    if (otherRem > 0 && Math.random() < 0.38) {
+      const otherGain = Math.min(
+        otherRem,
+        Math.max(1, Math.round(otherRem / (beatsLeft * (2.4 + Math.random())))),
+      )
+      if (pickLeft) rightShown += otherGain
+      else leftShown += otherGain
+    }
+
+    path.push({ t, left: leftShown, right: rightShown })
+    t += 150 + Math.random() * 140
+  }
+
+  path.push({ t: durationMs, left: leftTarget, right: rightTarget })
+  return path
+}
+
+function countsAt(elapsed, path) {
+  const t = Math.max(0, elapsed)
+  let point = path[0]
+  for (let i = 0; i < path.length; i += 1) {
+    if (path[i].t <= t) point = path[i]
+    else break
+  }
+  return { leftMentions: point.left, rightMentions: point.right }
 }
 
 export function startBattle({
@@ -67,7 +124,7 @@ export function startBattle({
   leftLatest = 0,
   rightLatest = 0,
   durationMs = 19000,
-  attackMs = 680,
+  attackMs = 320,
   onTick,
   onFinish,
 }) {
@@ -77,6 +134,7 @@ export function startBattle({
   const leftPower = leftDead ? 0 : Math.max(0.35, leftTotal + leftLastMonth * 0.35)
   const rightPower = rightDead ? 0 : Math.max(0.35, rightTotal + rightLastMonth * 0.35)
   const trueShares = sharesFromCounts(leftTotal, rightTotal)
+  const mentionPath = buildMentionPath(leftTotal, rightTotal, durationMs)
   let lastAttack = started - attackMs + 220
   let lastEmit = 0
   let lastSide = null
@@ -88,14 +146,11 @@ export function startBattle({
   let markedLeft = 0
   let markedRight = 0
 
-  const liveShares = (leftMentions, rightMentions) => {
-    if (leftDead && !rightDead) return { leftShare: 0, rightShare: 100 }
-    if (rightDead && !leftDead) return { leftShare: 100, rightShare: 0 }
-    return sharesFromCounts(leftMentions, rightMentions)
-  }
+  const liveShares = (leftMentions, rightMentions) =>
+    sharesFromCounts(leftMentions, rightMentions, leftTotal, rightTotal)
 
   const snapshot = (elapsed, event = null) => {
-    const { leftMentions, rightMentions } = countsAt(elapsed, durationMs, leftTotal, rightTotal)
+    const { leftMentions, rightMentions } = countsAt(elapsed, mentionPath)
     const shares = liveShares(leftMentions, rightMentions)
     return {
       elapsed,
@@ -183,7 +238,7 @@ export function startBattle({
     const elapsed = now - started
     let event = null
     let emitted = false
-    const { leftMentions, rightMentions } = countsAt(elapsed, durationMs, leftTotal, rightTotal)
+    const { leftMentions, rightMentions } = countsAt(elapsed, mentionPath)
 
     if (elapsed < durationMs && now - lastAttack >= attackMs) {
       if (leftDead || rightDead) {

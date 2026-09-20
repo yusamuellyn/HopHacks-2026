@@ -23,6 +23,12 @@ function roundShare(n) {
   return Math.round(n)
 }
 
+function displayShare(share, totalMentions) {
+  const rounded = roundShare(share)
+  if ((totalMentions ?? 0) <= 0) return rounded
+  return Math.max(1, Math.min(99, rounded))
+}
+
 function leadSide(leftShare, rightShare) {
   if (leftShare > rightShare) return 'left'
   if (rightShare > leftShare) return 'right'
@@ -224,7 +230,7 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
           const shape = pickShape()
           const shotId = particleId.current++
           setThrowSide(attacker)
-          window.setTimeout(() => setThrowSide(null), 360)
+          window.setTimeout(() => setThrowSide(null), 200)
           setShot({
             id: shotId,
             from: attacker,
@@ -265,8 +271,8 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
               setFlash(null)
               setRain([])
               inflight.current = false
-            }, 520)
-          }, 480)
+            }, 240)
+          }, 280)
         }
 
         const leftHp = roundShare(next.left.share)
@@ -403,11 +409,12 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
                   {item.text}
                 </span>
               ))}
-          {fx.combo && combos.left > 0 && <div className="combo-meter">{combos.left} COMBO</div>}
           <div className="fighter-scale">
             <FighterPortrait meme={left} mood={leftMood} state={leftState} />
           </div>
-          <b className={swing === 'left' ? 'is-swing' : ''}>{Math.round(leftShare)}%</b>
+          <b className={swing === 'left' ? 'is-swing' : ''}>
+            {displayShare(leftShare, totals?.leftTotal)}%
+          </b>
         </div>
         <strong className="arena__vs" aria-hidden="true">
           VS
@@ -424,11 +431,12 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
                   {item.text}
                 </span>
               ))}
-          {fx.combo && combos.right > 0 && <div className="combo-meter">{combos.right} COMBO</div>}
           <div className="fighter-scale">
             <FighterPortrait meme={right} mood={rightMood} state={rightState} />
           </div>
-          <b className={swing === 'right' ? 'is-swing' : ''}>{Math.round(rightShare)}%</b>
+          <b className={swing === 'right' ? 'is-swing' : ''}>
+            {displayShare(rightShare, totals?.rightTotal)}%
+          </b>
         </div>
       </div>
 

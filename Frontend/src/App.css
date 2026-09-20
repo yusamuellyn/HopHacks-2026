@@ -682,18 +682,18 @@
   left: 78%;
 }
 
-.shot--from-left.shot--arc { animation: shot-l-arc 0.72s cubic-bezier(0.22, 0.7, 0.25, 1) forwards; }
-.shot--from-right.shot--arc { animation: shot-r-arc 0.72s cubic-bezier(0.22, 0.7, 0.25, 1) forwards; }
-.shot--from-left.shot--dip { animation: shot-l-dip 0.72s cubic-bezier(0.3, 0.2, 0.2, 1) forwards; }
-.shot--from-right.shot--dip { animation: shot-r-dip 0.72s cubic-bezier(0.3, 0.2, 0.2, 1) forwards; }
-.shot--from-left.shot--zag { animation: shot-l-zag 0.74s linear forwards; }
-.shot--from-right.shot--zag { animation: shot-r-zag 0.74s linear forwards; }
-.shot--from-left.shot--loop { animation: shot-l-loop 0.8s ease-in-out forwards; }
-.shot--from-right.shot--loop { animation: shot-r-loop 0.8s ease-in-out forwards; }
-.shot--from-left.shot--bounce { animation: shot-l-bounce 0.76s cubic-bezier(0.2, 1.2, 0.3, 1) forwards; }
-.shot--from-right.shot--bounce { animation: shot-r-bounce 0.76s cubic-bezier(0.2, 1.2, 0.3, 1) forwards; }
-.shot--from-left.shot--slash { animation: shot-l-slash 0.55s cubic-bezier(0.15, 0.1, 0.2, 1) forwards; }
-.shot--from-right.shot--slash { animation: shot-r-slash 0.55s cubic-bezier(0.15, 0.1, 0.2, 1) forwards; }
+.shot--from-left.shot--arc { animation: shot-l-arc 0.32s cubic-bezier(0.22, 0.7, 0.25, 1) forwards; }
+.shot--from-right.shot--arc { animation: shot-r-arc 0.32s cubic-bezier(0.22, 0.7, 0.25, 1) forwards; }
+.shot--from-left.shot--dip { animation: shot-l-dip 0.32s cubic-bezier(0.3, 0.2, 0.2, 1) forwards; }
+.shot--from-right.shot--dip { animation: shot-r-dip 0.32s cubic-bezier(0.3, 0.2, 0.2, 1) forwards; }
+.shot--from-left.shot--zag { animation: shot-l-zag 0.34s linear forwards; }
+.shot--from-right.shot--zag { animation: shot-r-zag 0.34s linear forwards; }
+.shot--from-left.shot--loop { animation: shot-l-loop 0.36s ease-in-out forwards; }
+.shot--from-right.shot--loop { animation: shot-r-loop 0.36s ease-in-out forwards; }
+.shot--from-left.shot--bounce { animation: shot-l-bounce 0.34s cubic-bezier(0.2, 1.2, 0.3, 1) forwards; }
+.shot--from-right.shot--bounce { animation: shot-r-bounce 0.34s cubic-bezier(0.2, 1.2, 0.3, 1) forwards; }
+.shot--from-left.shot--slash { animation: shot-l-slash 0.28s cubic-bezier(0.15, 0.1, 0.2, 1) forwards; }
+.shot--from-right.shot--slash { animation: shot-r-slash 0.28s cubic-bezier(0.15, 0.1, 0.2, 1) forwards; }
 
 @keyframes shot-l-arc {
   0% { left: 12%; top: 42%; transform: rotate(0) scale(0.7); }
@@ -1871,7 +1871,6 @@
 
 .swarm-chip,
 .combo-pop,
-.combo-meter,
 .rain-drop,
 .odometer {
   pointer-events: none;
@@ -1895,18 +1894,6 @@
   left: auto;
   right: -10%;
   animation-name: swarm-in-right;
-}
-
-.combo-meter {
-  position: absolute;
-  top: -8px;
-  background: #ffe14a;
-  border: 3px solid #171717;
-  border-radius: 999px;
-  padding: 3px 10px;
-  font-family: var(--display);
-  font-size: 18px;
-  z-index: 4;
 }
 
 .float-layer {
