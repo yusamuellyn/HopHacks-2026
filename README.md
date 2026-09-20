@@ -3,12 +3,12 @@
 MemeArena
 Hackathon project with a FastAPI backend and a React (Vite) frontend.
 
-## Project structure
+**Live: [https://your-project.vercel.app](https://your-project.vercel.app)**
 
-```
-Backend/    FastAPI app (Python)
-Frontend/   React app (Vite)
-```
+## Project structure
+Backend/ FastAPI app (Python)
+Frontend/ React app (Vite)
+
 
 ## Running the backend
 
@@ -30,3 +30,5 @@ npm run dev
 ```
 
 The app runs at http://localhost:5173. CORS is already configured on the backend to allow requests from the dev server.
+
+
