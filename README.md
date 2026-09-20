@@ -31,12 +31,4 @@ npm run dev
 
 The app runs at http://localhost:5173. CORS is already configured on the backend to allow requests from the dev server.
 
-## Deployment (Vercel)
 
-Both frontend and backend deploy as a single Vercel project.
-
-- **Frontend**: Vite app in `Frontend/`, auto-detected by Vercel.
-- **Backend**: FastAPI app in `Backend/`, deployed as Vercel serverless functions. Needs a `vercel.json` routing API calls to the Python backend, and `Backend/main.py` should stay startup-light — the `@app.on_event("startup")` table creation should be run once manually against the database rather than relying on it firing per request.
-- Set these environment variables in the Vercel project settings: `TIGER_HOST`, `TIGER_PORT`, `TIGER_DB`, `TIGER_USER`, `TIGER_PASSWORD`, `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID`, `GEMINI_API_KEY`.
-- Update CORS `allow_origins` from `"*"` to the deployed frontend URL once live.
-- Database connections are opened per-request (`psycopg2.connect()` in `db()`) — fine for hackathon traffic, but watch Timescale's connection limit if traffic spikes, since each cold serverless invocation opens a new connection.
