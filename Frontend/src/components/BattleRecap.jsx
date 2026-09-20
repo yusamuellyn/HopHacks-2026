@@ -3,6 +3,7 @@ import { MEMES, memeDossier } from '../data/memes.js'
 import { formatCount, getDailyLeaderboard, getFighterRecord } from '../lib/stats.js'
 import FighterPortrait from './FighterPortrait.jsx'
 import { useSfx } from '../lib/sfx.jsx'
+import InfoDot from './InfoDot.jsx'
 
 const PAGES = ['scouting', 'highlights', 'leaderboard']
 
@@ -123,7 +124,9 @@ function Dossier({ meme, won }) {
         <FighterPortrait meme={meme} mood="contender" state="idle" />
         <div>
           <p className="dossier__tag">{won ? 'WINNER' : 'RUNNER-UP'}</p>
-          <h4>{meme.name}</h4>
+          <h4>
+            {meme.name} <InfoDot memeId={meme.id} />
+          </h4>
         </div>
       </div>
       <dl>

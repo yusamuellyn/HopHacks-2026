@@ -1136,6 +1136,7 @@
   gap: 10px;
   align-items: center;
   margin-bottom: 8px;
+  overflow: visible;
 }
 
 .dossier .portrait {
@@ -1551,6 +1552,7 @@
   .recap-scout__grid,
   .recap-score {
     grid-template-columns: 1fr;
+    overflow: visible;
   }
 
   .recap-board ol,
@@ -2211,4 +2213,40 @@
   font-size: 14px;
   padding: 6px 10px !important;
   line-height: 1.3;
+}
+
+.info-dot {
+  position: relative;
+  display: inline-block;
+  margin-left: 6px;
+}
+
+.info-dot__btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: #fff;
+  font-weight: 800;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.info-dot__popover {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 0;
+  width: 240px;
+  background: #fffdf6;
+  border: 3px solid var(--line);
+  border-radius: 18px;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  box-shadow: var(--shadow);
+  z-index: 50;
+  text-align: left;
 }

@@ -12,8 +12,22 @@ from elevenlabs.client import ElevenLabs
 
 from search_terms import MEME_SEARCH_TERMS
 
+from google import genai
 
 load_dotenv()
+
+gemini_client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+
+
+import base64
+
+class MemeHistoryRequest(BaseModel):
+    memeId: str
+  
+
+
+
+
 
 app = FastAPI()
 app.add_middleware(
@@ -310,6 +324,24 @@ def build_stats_payload(cur):
         "maxYesterday": max_yesterday,
     }
 
+
+
+@app.post("/api/meme-history")
+def meme_history(payload: MemeHistoryRequest):
+    meme_name = payload.memeId.replace('-', ' ')
+    history_prompt = (
+        f"You are an internet culture historian. In exactly one short sentence, "
+        f"explain when and how the internet meme \"{meme_name}\" became popular. "
+        "Only describe this exact meme, not a similarly named person, place, or product. "
+        "If unsure of the exact origin, say so briefly. "
+        "Plain simple language, no preamble, no markdown."
+    )
+
+    history_response = gemini_client.models.generate_content(
+        model = "gemini-flash-lite-latest",
+        contents=history_prompt,
+    )
+    return {"text": history_response.text}
 
 @app.get("/api/stats")
 def stats():
