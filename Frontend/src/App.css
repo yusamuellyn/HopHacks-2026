@@ -1161,6 +1161,7 @@
   font-size: 22px;
   margin: 0;
   text-transform: none;
+  overflow: visible;
 }
 
 .dossier dl {
@@ -2236,9 +2237,10 @@
 
 .info-dot__popover {
   position: absolute;
-  top: calc(100% + 14px);
-  left: 0;
-  width: 240px;
+  top: 50%;
+  left: calc(100% + 10px);
+  transform: translateY(-50%);
+  width: 260px;
   background: #fffdf6;
   border: 3px solid var(--line);
   border-radius: 18px;
@@ -2247,6 +2249,12 @@
   font-weight: 600;
   line-height: 1.35;
   box-shadow: var(--shadow);
-  z-index: 50;
+  z-index: 80;
   text-align: left;
+  pointer-events: none;
+}
+
+.dossier:last-child .info-dot__popover {
+  left: auto;
+  right: calc(100% + 10px);
 }
