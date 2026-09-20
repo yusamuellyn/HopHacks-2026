@@ -864,7 +864,7 @@
 .arena__dock {
   margin-top: auto;
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(240px, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
   align-items: stretch;
   z-index: 2;

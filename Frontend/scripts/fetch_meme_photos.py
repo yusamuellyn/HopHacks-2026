@@ -67,6 +67,26 @@ SLUGS = {
     "distracted-boyfriend": ["distracted-boyfriend"],
     "big-chungus": ["big-chungus"],
     "shooting-stars": ["shooting-stars"],
+    "aura-farming": ["indonesian-boat-racing-kid"],
+    "sigma-boy": ["sigma-boy", "sigma-sigma-boy"],
+    "steal-a-brainrot": ["subcultures/steal-a-brainrot"],
+    "sprunki": ["subcultures/sprunki"],
+    "chicken-jockey": ["chicken-jockey-minecraft-movie"],
+    "kpop-demon-hunters": ["kpop-demon-hunters"],
+    "clanker": ["clanker"],
+    "rage-bait": ["rage-bait-ragebait"],
+    "ghibli-ai": ["studio-ghibli-ai-generator"],
+    "ai-action-figure": ["ai-action-figures"],
+    "silksong": ["hollow-knight-silksong", "silksong-steam-server-crash"],
+    "dubai-chocolate": ["labubu-matcha-dubai-chocolate", "dubai-chocolate"],
+    "ambatukam": ["ambatukam"],
+    "jet2-holiday": ["nothing-beats-a-jet2-holiday", "jet2-holiday"],
+    "apt-apt": ["apt-by-rose-bruno-mars"],
+    "pesto-penguin": ["pesto-the-penguin"],
+    "justice-for-peanut": ["peanut-the-squirrel-pnut"],
+    "crashout": ["crashout-crash-out"],
+    "yapper": ["yap-yapping-yapper"],
+    "duolingo-owl": ["evil-duolingo-owl"],
 }
 
 SEARCH_TERMS = {
@@ -113,6 +133,26 @@ SEARCH_TERMS = {
     "distracted-boyfriend": "distracted boyfriend",
     "big-chungus": "big chungus",
     "shooting-stars": "shooting stars meme",
+    "aura-farming": "aura farming pacu jalur",
+    "sigma-boy": "sigma boy meme",
+    "steal-a-brainrot": "steal a brainrot",
+    "sprunki": "sprunki incredibox",
+    "chicken-jockey": "chicken jockey minecraft movie",
+    "kpop-demon-hunters": "kpop demon hunters",
+    "clanker": "clanker meme",
+    "rage-bait": "rage bait ragebait",
+    "ghibli-ai": "chatgpt ghibli style",
+    "ai-action-figure": "ai action figure",
+    "silksong": "hollow knight silksong",
+    "dubai-chocolate": "dubai chocolate",
+    "ambatukam": "ambatukam meme",
+    "jet2-holiday": "nothing beats a jet2 holiday",
+    "apt-apt": "apt rose bruno mars",
+    "pesto-penguin": "pesto the penguin",
+    "justice-for-peanut": "peanut the squirrel",
+    "crashout": "crashing out meme",
+    "yapper": "yapper meme",
+    "duolingo-owl": "duolingo owl",
 }
 
 
@@ -148,7 +188,9 @@ def search_kym(query: str) -> str | None:
     html = body.decode("utf-8", "replace")
     # Prefer meme entry cards over news/editorials.
     for href in re.findall(r'href="(/memes/[^"?#]+)"', html):
-        if href.count("/") == 2 and not href.startswith("/memes/people/"):
+        if href.startswith("/memes/people/") or href.endswith("/meme-man"):
+            continue
+        if href.count("/") == 2:
             return "https://knowyourmeme.com" + href
     return None
 
@@ -208,9 +250,21 @@ def resolve_entry(meme_id: str) -> str | None:
     return None
 
 
+def existing_photo_ids() -> set[str]:
+    return {
+        path.stem.lower()
+        for path in OUT.iterdir()
+        if path.suffix.lower() in {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+    }
+
+
 def main() -> None:
     report = {}
+    already = existing_photo_ids()
     for meme_id in SLUGS:
+        if meme_id in already:
+            report[meme_id] = "EXISTS"
+            continue
         print(f"\n{meme_id}")
         image = resolve_entry(meme_id)
         if not image:

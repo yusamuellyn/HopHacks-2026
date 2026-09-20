@@ -1,10 +1,10 @@
 import FighterPortrait from './FighterPortrait.jsx'
-import { formatCount, getFighterRecord } from '../lib/stats.js'
+import { getFighterRecord } from '../lib/stats.js'
 
 export function getMood(meme, stats) {
   const record = getFighterRecord(stats, meme.id)
   const lastMonth = record.lastMonthMentions || 0
-  const maxLastMonth = Math.max(1, stats.maxLastMonth || stats.maxYesterday || 0)
+  const maxLastMonth = Math.max(1, stats.maxLastMonth || 0)
   const heat = Math.min(100, (Math.log1p(lastMonth) / Math.log1p(maxLastMonth)) * 100)
   const popularity = heat + (record.wins ?? 0) * 8 - (record.losses ?? 0) * 5
   const isChamp = stats.lastChampionId === meme.id || popularity >= 80
@@ -27,6 +27,8 @@ export default function FighterSlot({ meme, stats, side, emptyLabel }) {
 
   const mood = getMood(meme, stats)
   const record = getFighterRecord(stats, meme.id)
+  const fights = (record.wins || 0) + (record.losses || 0)
+  const winRate = fights > 0 ? `${Math.round((record.wins / fights) * 100)}%` : '—'
 
   return (
     <article
@@ -42,14 +44,14 @@ export default function FighterSlot({ meme, stats, side, emptyLabel }) {
       <p className="slot__desc">{meme.description}</p>
       <dl className="slot__stats">
         <div>
-          <dt>Yesterday</dt>
-          <dd>{formatCount(record.lastMonthMentions)}</dd>
-        </div>
-        <div>
           <dt>W / L</dt>
           <dd>
             {record.wins} / {record.losses}
           </dd>
+        </div>
+        <div>
+          <dt>Win rate</dt>
+          <dd>{winRate}</dd>
         </div>
         <div>
           <dt>Aura</dt>

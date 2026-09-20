@@ -189,7 +189,7 @@ export default function MemeSearch({
             aria-describedby={`dead-meme-copy-${side}`}
             onClick={(event) => event.stopPropagation()}
           >
-            <p className="dead-meme__kicker">Yesterday searches: 0</p>
+            <p className="dead-meme__kicker">0 mentions</p>
             <h2 id={`dead-meme-title-${side}`}>Dead Meme!</h2>
             <p id={`dead-meme-copy-${side}`}>Are you sure you want to select this meme?</p>
             <div className="dead-meme__actions">

@@ -1,10 +1,8 @@
 import FighterSlot from './FighterSlot.jsx'
 import MemeSearch from './MemeSearch.jsx'
-import { formatDay } from '../lib/stats.js'
 
 export default function CharacterSelect({ left, right, stats, onSelectLeft, onSelectRight, onStart }) {
   const ready = Boolean(left && right)
-  const yesterday = formatDay(stats?.window?.latest)
 
   return (
     <div className="select-screen">
@@ -12,9 +10,6 @@ export default function CharacterSelect({ left, right, stats, onSelectLeft, onSe
         <p className="eyebrow">HopHacks 2026 · Memetics</p>
         <h1 className="hero-title">MEME ARENA</h1>
         <p className="tagline">Two memes enter. The timeline decides.</p>
-        {yesterday && (
-          <p className="window-note">Yesterday searches from {yesterday} · records saved to the arena</p>
-        )}
       </header>
 
       <div className="select-row">

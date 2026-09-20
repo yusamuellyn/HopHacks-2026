@@ -15,7 +15,6 @@ export default function BattleRecap({
   right,
   result,
   stats,
-  totals,
   maxCombos,
   onRematch,
   onShare,
@@ -25,8 +24,8 @@ export default function BattleRecap({
   const pageId = PAGES[page]
   const board = useMemo(() => getDailyLeaderboard(stats, MEMES), [stats])
   const recap = useMemo(
-    () => buildRecap(left, right, result, totals, maxCombos, stats),
-    [left, right, result, totals, maxCombos, stats],
+    () => buildRecap(left, right, result, maxCombos, stats),
+    [left, right, result, maxCombos, stats],
   )
 
   return (
@@ -39,7 +38,7 @@ export default function BattleRecap({
         <p className="recap__sub">{roundShare(result.winnerShare)}% meme dominance</p>
 
         {pageId === 'scouting' && <ScoutPage left={left} right={right} winnerId={result.winner.id} />}
-        {pageId === 'highlights' && <HighlightsPage recap={recap} left={left} right={right} result={result} totals={totals} />}
+        {pageId === 'highlights' && <HighlightsPage recap={recap} left={left} right={right} result={result} />}
         {pageId === 'leaderboard' && <LeaderboardPage board={board} winnerId={result.winner.id} stats={stats} />}
 
         <div className="recap__nav">
@@ -157,11 +156,7 @@ function Dossier({ meme, won }) {
   )
 }
 
-function HighlightsPage({ recap, left, right, result, totals }) {
-  const rows = [
-    { label: 'Yesterday', left: totals?.leftLastMonth ?? result.left.mentions, right: totals?.rightLastMonth ?? result.right.mentions },
-    { label: 'Latest day', left: totals?.leftLatest ?? 0, right: totals?.rightLatest ?? 0 },
-  ]
+function HighlightsPage({ recap, left, right, result }) {
   return (
     <div className="recap-highlights">
       <h3>Match highlights</h3>
@@ -187,23 +182,6 @@ function HighlightsPage({ recap, left, right, result, totals }) {
           </div>
         </div>
       </div>
-      <h4>When they were found</h4>
-      <ul className="recap-sources">
-        {rows.map((row) => {
-          const total = row.left + row.right || 1
-          return (
-            <li key={row.label}>
-              <span>{row.label}</span>
-              <div className="recap-bar" style={{ '--left': `${(row.left / total) * 100}%` }}>
-                <i />
-              </div>
-              <em>
-                {formatCount(row.left)}–{formatCount(row.right)}
-              </em>
-            </li>
-          )
-        })}
-      </ul>
       <ul className="recap-notes">
         {recap.notes.map((note) => (
           <li key={note}>{note}</li>
@@ -281,16 +259,13 @@ function PlacePlaque({ place }) {
   )
 }
 
-function buildRecap(left, right, result, totals, maxCombos, stats) {
+function buildRecap(left, right, result, maxCombos, stats) {
   const winnerMentions = result.winnerSide === 'left' ? result.left.mentions : result.right.mentions
   const loserMentions = result.winnerSide === 'left' ? result.right.mentions : result.left.mentions
   const winnerCombo = maxCombos?.[result.winnerSide] || 0
   const winnerRecord = getFighterRecord(stats, result.winner.id)
-  const lastMonthWinner = result.winnerSide === 'left' ? totals?.leftLastMonth : totals?.rightLastMonth
-  const lastMonthLoser = result.winnerSide === 'left' ? totals?.rightLastMonth : totals?.leftLastMonth
   const notes = [
     `${result.winner.name} closed it ${formatCount(winnerMentions)}–${formatCount(loserMentions)} on real keyword hits.`,
-    `Yesterday's searches: ${formatCount(lastMonthWinner)} for ${result.winner.name} vs ${formatCount(lastMonthLoser)} for ${result.loser.name}.`,
     winnerCombo > 1
       ? `${result.winner.name} stacked a ${winnerCombo}-hit combo before the KO.`
       : `${result.loser.name} never found a real combo. The timeline did not blink.`,
@@ -299,7 +274,7 @@ function buildRecap(left, right, result, totals, maxCombos, stats) {
       : `${result.winner.name} just opened an arena record.`,
   ]
   return {
-    blurb: `${result.winner.name} took the belt with ${roundShare(result.winnerShare)}% of yesterday's posts. ${result.loser.name} showed up, then got washed as the mentions piled on.`,
+    blurb: `${result.winner.name} took the belt with ${roundShare(result.winnerShare)}% of the mentions. ${result.loser.name} showed up, then got washed as the hits piled on.`,
     notes,
   }
 }

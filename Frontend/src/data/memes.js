@@ -7,8 +7,8 @@ export const MEMES = [
     age: '2025',
     origin: 'Italian brainrot / TikTok',
     description:
-      'A wooden drum-man who only appears at sahur. Yesterday’s undisputed king of the timeline.',
-    yesterdayPopularity: 96,
+      'A wooden drum-man who only appears at sahur. Undisputed king of the timeline.',
+    popularity: 96,
     color: '#f4c430',
     accent: '#7c2d12',
     sigil: 'drum',
@@ -21,7 +21,7 @@ export const MEMES = [
     origin: 'YouTube / DaFuq!?Boom!',
     description:
       'Singing toilets that ate the internet. Still dangerous in a crowd, slightly washed in 2026.',
-    yesterdayPopularity: 62,
+    popularity: 62,
     color: '#5eead4',
     accent: '#134e4a',
     sigil: 'toilet',
@@ -34,7 +34,7 @@ export const MEMES = [
     origin: 'TikTok / US meme belt',
     description:
       'The cursed-state catch-all. Anything unhinged is Ohio. Mid-tier aura, high chaos potential.',
-    yesterdayPopularity: 58,
+    popularity: 58,
     color: '#fb7185',
     accent: '#9f1239',
     sigil: 'ohio',
@@ -46,8 +46,8 @@ export const MEMES = [
     age: '2025',
     origin: 'Slang / schoolyard / TikTok',
     description:
-      'A number that became a whole personality. Lowkey yesterday. Looks tired. Hits different at 67 HP.',
-    yesterdayPopularity: 18,
+      'A number that became a whole personality. Looks tired. Hits different at 67 HP.',
+    popularity: 18,
     color: '#a3e635',
     accent: '#3f6212',
     sigil: '67',
@@ -60,7 +60,7 @@ export const MEMES = [
     origin: 'Italian brainrot',
     description:
       'Shark in sneakers. Nonsense that somehow became a religion. Still has fight left.',
-    yesterdayPopularity: 74,
+    popularity: 74,
     color: '#38bdf8',
     accent: '#0c4a6e',
     sigil: 'shark',
@@ -73,7 +73,7 @@ export const MEMES = [
     origin: 'Italian brainrot',
     description:
       'Crocodile fused with a bomber plane. Loud, unwell, and here to take the belt.',
-    yesterdayPopularity: 71,
+    popularity: 71,
     color: '#86efac',
     accent: '#14532d',
     sigil: 'croc',
@@ -86,7 +86,7 @@ export const MEMES = [
     origin: 'Pop Mart / Lisa / collector culture',
     description:
       'Fanged plush demon that escaped toy shelves into real life. Cute until it isn’t.',
-    yesterdayPopularity: 81,
+    popularity: 81,
     color: '#f9a8d4',
     accent: '#9d174d',
     sigil: 'labubu',
@@ -99,7 +99,7 @@ export const MEMES = [
     origin: 'X / gray dog meme',
     description:
       'The gray dog who is unbothered. Low damage, high defense. Might nap mid-battle.',
-    yesterdayPopularity: 44,
+    popularity: 44,
     color: '#94a3b8',
     accent: '#334155',
     sigil: 'chill',
@@ -112,7 +112,7 @@ export const MEMES = [
     origin: 'Twitch / Kai Cenat / slang',
     description:
       'Charisma as a combat stat. Older meme, still throws game if the crowd believes.',
-    yesterdayPopularity: 39,
+    popularity: 39,
     color: '#c084fc',
     accent: '#6b21a8',
     sigil: 'rizz',
@@ -125,7 +125,7 @@ export const MEMES = [
     origin: 'Manosphere parody / TikTok',
     description:
       'The grindset ghost. Washed as a lifestyle, lethal as irony. Stares through the camera.',
-    yesterdayPopularity: 33,
+    popularity: 33,
     color: '#e5e7eb',
     accent: '#111827',
     sigil: 'sigma',
@@ -138,7 +138,7 @@ export const MEMES = [
     origin: 'Twitch / streaming slang',
     description:
       'A reaction that became a noun. High burst, no stamina. Comes in loud then disappears.',
-    yesterdayPopularity: 28,
+    popularity: 28,
     color: '#fb923c',
     accent: '#9a3412',
     sigil: 'gyatt',
@@ -151,7 +151,7 @@ export const MEMES = [
     origin: 'AMP / Fanum / food-stealing bit',
     description:
       'The friend who takes a cut of your fries. Economy-based fighter. Steals mentions mid-combo.',
-    yesterdayPopularity: 24,
+    popularity: 24,
     color: '#facc15',
     accent: '#854d0e',
     sigil: 'tax',
@@ -164,7 +164,7 @@ export const MEMES = [
     origin: 'TikTok / Jools Lebron',
     description:
       'Soft voice, lethal poise. Wins by looking unbothered while the bar drains you.',
-    yesterdayPopularity: 41,
+    popularity: 41,
     color: '#fda4af',
     accent: '#881337',
     sigil: 'demure',
@@ -179,7 +179,7 @@ export const MEMES = [
     origin: 'Nashville street interview / TikTok',
     description:
       'An unscripted sidewalk answer that briefly bought half the internet. Massive burst damage, fast decay.',
-    yesterdayPopularity: 64,
+    popularity: 64,
     color: '#fef08a',
     accent: '#713f12',
     sigil: 'spit',
@@ -192,7 +192,7 @@ export const MEMES = [
     origin: 'TikTok / Looksmaxxing culture',
     description:
       'Shh, point to the jawline. High passive defense against verbal arguments, zero voice chat abilities.',
-    yesterdayPopularity: 52,
+    popularity: 52,
     color: '#e2e8f0',
     accent: '#1e293b',
     sigil: 'jaw',
@@ -205,7 +205,7 @@ export const MEMES = [
     origin: 'TikTok / Crawly_Gnome',
     description:
       'Pointy green hat crawling under retail counters. Stealth-class menace that confuses security guards.',
-    yesterdayPopularity: 69,
+    popularity: 69,
     color: '#4ade80',
     accent: '#14532d',
     sigil: 'gnome',
@@ -218,7 +218,7 @@ export const MEMES = [
     origin: 'Virtual Influencer / TikTok horror',
     description:
       'The pig-man whose phone incoming screen haunts dreams. High psychological pressure.',
-    yesterdayPopularity: 38,
+    popularity: 38,
     color: '#fbcfe8',
     accent: '#831843',
     sigil: 'phone',
@@ -231,7 +231,7 @@ export const MEMES = [
     origin: 'Street interviews / TikTok',
     description:
       'Forces instant status paralysis on anyone in the room. Whichever fighter blinks first takes full damage.',
-    yesterdayPopularity: 61,
+    popularity: 61,
     color: '#fde047',
     accent: '#713f12',
     sigil: 'statue',
@@ -244,7 +244,7 @@ export const MEMES = [
     origin: 'Twitch / YouTube Shorts',
     description:
       'Takes up 90% of the screen width. High health pool, bends local gravitational physics when provoked.',
-    yesterdayPopularity: 78,
+    popularity: 78,
     color: '#fdba74',
     accent: '#7c2d12',
     sigil: 'scale',
@@ -257,7 +257,7 @@ export const MEMES = [
     origin: 'TikTok / Alan Walker music / AI art',
     description:
       'Blue mushroom feline marching through the woods. High nostalgia aura, slow movement speed.',
-    yesterdayPopularity: 30,
+    popularity: 30,
     color: '#60a5fa',
     accent: '#1e3a8a',
     sigil: 'mushroom',
@@ -270,7 +270,7 @@ export const MEMES = [
     origin: 'TikTok / Italian disco remix',
     description:
       'Spinning inside a round camera frame with unhinged rhythm. Pure speed build with zero stamina cost.',
-    yesterdayPopularity: 51,
+    popularity: 51,
     color: '#fbbf24',
     accent: '#78350f',
     sigil: 'raccoon',
@@ -283,7 +283,7 @@ export const MEMES = [
     origin: 'TikTok / Big Justice & AJ',
     description:
       'Double chunk chocolate cookie zealots. Maximum volume, heavy physical impact. Brings the boom on impact.',
-    yesterdayPopularity: 57,
+    popularity: 57,
     color: '#ef4444',
     accent: '#7f1d1d',
     sigil: 'cookie',
@@ -296,7 +296,7 @@ export const MEMES = [
     origin: 'TikTok / Spongebob violin audio',
     description:
       'Giant watery eyes and tiny hands. Inflicts instantly stackable guilt debuffs on any attacker.',
-    yesterdayPopularity: 49,
+    popularity: 49,
     color: '#fed7aa',
     accent: '#7c2d12',
     sigil: 'hamster',
@@ -309,7 +309,7 @@ export const MEMES = [
     origin: 'TikTok slang / sports internet',
     description:
       'The invisible clout meter. Gained instantly by landing smooth moves, depleted completely if you slip on ice.',
-    yesterdayPopularity: 76,
+    popularity: 76,
     color: '#c084fc',
     accent: '#581c87',
     sigil: 'aura',
@@ -322,7 +322,7 @@ export const MEMES = [
     origin: 'TikTok / Eric Ducharme / Ninja meme',
     description:
       'Imagine if Ninja got one. Unexpected musical combo breaker that resets all active cooldowns.',
-    yesterdayPopularity: 42,
+    popularity: 42,
     color: '#38bdf8',
     accent: '#0c4a6e',
     sigil: 'fade',
@@ -337,7 +337,7 @@ export const MEMES = [
     origin: 'Bait-and-switch link prank',
     description:
       'The original never-dying bait link. Almost two decades in and it still lands the surprise attack.',
-    yesterdayPopularity: 55,
+    popularity: 55,
     color: '#facc15',
     accent: '#713f12',
     sigil: 'rick',
@@ -350,7 +350,7 @@ export const MEMES = [
     origin: 'YouTube / Flash animation',
     description:
       'Pop-tart body, rainbow contrail, infinite loop energy. Still flies through the timeline on nostalgia alone.',
-    yesterdayPopularity: 20,
+    popularity: 20,
     color: '#f472b6',
     accent: '#831843',
     sigil: 'rainbow',
@@ -363,7 +363,7 @@ export const MEMES = [
     origin: 'Rage comics / deviantART',
     description:
       'The original meme-face, drawn in MS Paint and never bested. Pure smug damage, no defense needed.',
-    yesterdayPopularity: 15,
+    popularity: 15,
     color: '#e5e7eb',
     accent: '#374151',
     sigil: 'trollface',
@@ -376,7 +376,7 @@ export const MEMES = [
     origin: 'Shiba Inu photo / broken-English captions',
     description:
       'Much fight, very battle, wow. The Shiba that briefly ran a cryptocurrency and never stopped grinning.',
-    yesterdayPopularity: 34,
+    popularity: 34,
     color: '#fbbf24',
     accent: '#78350f',
     sigil: 'shiba',
@@ -389,7 +389,7 @@ export const MEMES = [
     origin: 'KC Green webcomic',
     description:
       'A dog sipping coffee while the room burns around him. The universal reaction to everything being on fire.',
-    yesterdayPopularity: 45,
+    popularity: 45,
     color: '#f97316',
     accent: '#7c2d12',
     sigil: 'fire',
@@ -402,7 +402,7 @@ export const MEMES = [
     origin: 'Bugs Bunny screenshot edit',
     description:
       'An oversized Bugs Bunny screenshot that spiraled into a genuine cultural moment. Big, round, unkillable.',
-    yesterdayPopularity: 19,
+    popularity: 19,
     color: '#d4d4d8',
     accent: '#3f3f46',
     sigil: 'rabbit',
@@ -417,7 +417,7 @@ export const MEMES = [
     origin: 'TikTok / Pacu Jalur boat dancer',
     description:
       'Effortless cool as a full-time job. Grows aura passively while everyone else tries too hard.',
-    yesterdayPopularity: 72,
+    popularity: 72,
     color: '#a78bfa',
     accent: '#4c1d95',
     sigil: 'boat',
@@ -430,7 +430,7 @@ export const MEMES = [
     origin: 'Russian-language TikTok audio',
     description:
       'A catchy duet that turned every group photo into a sigma showdown. Hard to un-hear.',
-    yesterdayPopularity: 60,
+    popularity: 60,
     color: '#e879f9',
     accent: '#701a75',
     sigil: 'duet',
@@ -443,7 +443,7 @@ export const MEMES = [
     origin: 'Roblox',
     description:
       'A Roblox game where the whole point is snatching brainrot characters from other players. Chaotic and very stealable.',
-    yesterdayPopularity: 66,
+    popularity: 66,
     color: '#f472b6',
     accent: '#831843',
     sigil: 'steal',
@@ -456,7 +456,7 @@ export const MEMES = [
     origin: 'Incredibox mod / YouTube',
     description:
       'Beat-making critters that got weirdly dark and weirdly huge. A mod that outgrew its parent game.',
-    yesterdayPopularity: 40,
+    popularity: 40,
     color: '#facc15',
     accent: '#422006',
     sigil: 'beat',
@@ -469,7 +469,7 @@ export const MEMES = [
     origin: 'A Minecraft Movie',
     description:
       'A movie scene that made theaters throw popcorn and shout. Fast, loud, and very on brand.',
-    yesterdayPopularity: 55,
+    popularity: 55,
     color: '#84cc16',
     accent: '#365314',
     sigil: 'chicken',
@@ -482,7 +482,7 @@ export const MEMES = [
     origin: 'Netflix animated film',
     description:
       'A pop group that fights demons and topped the charts doing it. Catchy enough to carry a whole fandom.',
-    yesterdayPopularity: 85,
+    popularity: 85,
     color: '#f0abfc',
     accent: '#86198f',
     sigil: 'huntrix',
@@ -495,7 +495,7 @@ export const MEMES = [
     origin: 'Star Wars slang / anti-AI internet',
     description:
       'A sci-fi insult for robots turned real-world slang for AI. Mostly used ironically, sometimes not.',
-    yesterdayPopularity: 58,
+    popularity: 58,
     color: '#94a3b8',
     accent: '#1e293b',
     sigil: 'robot',
@@ -508,7 +508,7 @@ export const MEMES = [
     origin: 'Internet slang / engagement farming',
     description:
       'Content built to make you angry enough to comment. Feeds on your replies.',
-    yesterdayPopularity: 57,
+    popularity: 57,
     color: '#f87171',
     accent: '#7f1d1d',
     sigil: 'bait',
@@ -521,7 +521,7 @@ export const MEMES = [
     origin: 'AI image generation trend',
     description:
       'Every photo turned into a soft Ghibli-style frame. Wholesome aesthetic, controversial method.',
-    yesterdayPopularity: 30,
+    popularity: 30,
     color: '#86efac',
     accent: '#166534',
     sigil: 'ghibli',
@@ -534,7 +534,7 @@ export const MEMES = [
     origin: 'AI image trend / LinkedIn',
     description:
       'Yourself as a boxed toy with tiny accessories. Peak self-promotion, minimal poseability.',
-    yesterdayPopularity: 22,
+    popularity: 22,
     color: '#fb923c',
     accent: '#7c2d12',
     sigil: 'figure',
@@ -547,7 +547,7 @@ export const MEMES = [
     origin: 'Team Cherry / gaming',
     description:
       'The sequel everyone joked would never come out, until it did. Years of waiting turned into legend.',
-    yesterdayPopularity: 50,
+    popularity: 50,
     color: '#f43f5e',
     accent: '#4c0519',
     sigil: 'needle',
@@ -560,7 +560,7 @@ export const MEMES = [
     origin: 'TikTok / food trend',
     description:
       'Pistachio and crunchy kunafa in a chocolate bar. Expensive, crunchy, and everywhere.',
-    yesterdayPopularity: 45,
+    popularity: 45,
     color: '#a16207',
     accent: '#422006',
     sigil: 'chocolate',
@@ -573,7 +573,7 @@ export const MEMES = [
     origin: 'Indonesian TikTok / Dreamybull',
     description:
       'A name-shout meme with a very specific ending. Old-school brainrot that still gets a laugh.',
-    yesterdayPopularity: 35,
+    popularity: 35,
     color: '#fbbf24',
     accent: '#78350f',
     sigil: 'shout',
@@ -586,7 +586,7 @@ export const MEMES = [
     origin: 'UK TikTok / Jet2 ad',
     description:
       'A holiday ad slogan turned into a chant. Nothing beats it, apparently.',
-    yesterdayPopularity: 28,
+    popularity: 28,
     color: '#ef4444',
     accent: '#7f1d1d',
     sigil: 'plane',
@@ -599,7 +599,7 @@ export const MEMES = [
     origin: 'Rosé & Bruno Mars',
     description:
       'A drinking-game chant that became a global earworm. Impossible to stop singing once started.',
-    yesterdayPopularity: 48,
+    popularity: 48,
     color: '#fb7185',
     accent: '#881337',
     sigil: 'apt',
@@ -612,7 +612,7 @@ export const MEMES = [
     origin: 'Sea Life Melbourne / TikTok',
     description:
       'A very large, very fluffy baby penguin who became an aquarium celebrity. Big presence, mostly past his peak.',
-    yesterdayPopularity: 20,
+    popularity: 20,
     color: '#cbd5e1',
     accent: '#334155',
     sigil: 'penguin',
@@ -625,7 +625,7 @@ export const MEMES = [
     origin: 'X / Peanut the squirrel',
     description:
       'A pet squirrel story that turned into a rallying cry. Small rodent, big outrage.',
-    yesterdayPopularity: 22,
+    popularity: 22,
     color: '#d97706',
     accent: '#451a03',
     sigil: 'squirrel',
@@ -638,7 +638,7 @@ export const MEMES = [
     origin: 'Slang / Twitter',
     description:
       'A full emotional meltdown, usually over something small. Loud, dramatic, and a little unhinged.',
-    yesterdayPopularity: 63,
+    popularity: 63,
     color: '#ef4444',
     accent: '#450a0a',
     sigil: 'crash',
@@ -651,7 +651,7 @@ export const MEMES = [
     origin: 'Slang / TikTok / Twitch',
     description:
       'Someone who talks nonstop with no clear point. Stamina bar never empties.',
-    yesterdayPopularity: 46,
+    popularity: 46,
     color: '#fde68a',
     accent: '#78350f',
     sigil: 'yap',
@@ -664,7 +664,7 @@ export const MEMES = [
     origin: 'Duolingo / TikTok',
     description:
       'A green owl that will hunt you if you skip your lesson. Passive-aggressive notifications, permanent guilt.',
-    yesterdayPopularity: 54,
+    popularity: 54,
     color: '#58cc02',
     accent: '#1f4d00',
     sigil: 'owl',
@@ -685,7 +685,7 @@ export function getMemeById(id) {
 }
  
 export function memeDossier(meme) {
-  const heat = meme.yesterdayPopularity ?? 50
+  const heat = meme.popularity ?? 50
   let peak = `${meme.age} breakout`
   if (heat >= 85) peak = `Still peaking (${heat}/100 heat)`
   else if (heat >= 60) peak = `${meme.age} boom, still circulating (${heat}/100)`

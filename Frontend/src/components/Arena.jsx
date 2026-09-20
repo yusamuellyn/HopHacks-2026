@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { playAnnouncement, stopAnnouncer } from '../lib/announcer.js'
 import { startBattle } from '../lib/battleEngine.js'
 import { useFx } from '../lib/fx.jsx'
@@ -321,14 +321,6 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
     setMusicTrack(remaining <= 5 ? 'battleClimax' : 'battle')
   }, [remaining, result, totals])
 
-  const breakdown = useMemo(() => {
-    if (!totals) return []
-    return [
-      { source: 'Yesterday', left: totals.leftLastMonth, right: totals.rightLastMonth },
-      { source: 'Latest day', left: totals.leftLatest, right: totals.rightLatest },
-    ]
-  }, [totals])
-
   const winnerSide = result?.winnerSide
   const leftState =
     winnerSide === 'right'
@@ -425,7 +417,7 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
         <div className="ticker" ref={feedRef}>
           <h3>Fight commentary</h3>
           {loadError && <p className="ticker__line">{loadError}</p>}
-          {!loadError && !totals && <p className="ticker__line">Searching yesterday's mentions...</p>}
+          {!loadError && !totals && <p className="ticker__line">Searching mentions...</p>}
           {feed.map((line) => (
             <p key={line.id} className={`ticker__line ticker__line--${line.side}`}>
               {line.text}
@@ -435,23 +427,6 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
             <p className="ticker__line">The bell is about to ring...</p>
           )}
         </div>
-
-        <section className="breakdown">
-          <h3>Search pressure</h3>
-          <p className="breakdown__window">
-            Yesterday vs latest day
-          </p>
-          <ul>
-            {breakdown.map((row) => (
-              <li key={row.source}>
-                <span>{row.source}</span>
-                <span>
-                  {formatCount(row.left)} vs {formatCount(row.right)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
       </div>
 
       {easter && (
@@ -466,7 +441,6 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
           right={right}
           result={result}
           stats={stats}
-          totals={totals}
           maxCombos={maxCombos}
           onRematch={onRematch}
           onShare={() =>

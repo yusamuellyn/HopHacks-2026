@@ -108,14 +108,14 @@ export function getFighterRecord(stats, memeId) {
   }
   return {
     ...record,
-    lastMonthMentions: record.lastMonthMentions ?? record.yesterdayMentions ?? 0,
+    lastMonthMentions: record.lastMonthMentions ?? 0,
   }
 }
 
 export function isDeadMeme(stats, memeId) {
   const record = stats?.fighters?.[memeId]
   if (!record) return false
-  return Number(record.lastMonthMentions ?? record.yesterdayMentions ?? 0) <= 0
+  return Number(record.lastMonthMentions ?? 0) <= 0
 }
 
 export function getDailyLeaderboard(stats, roster) {
@@ -129,7 +129,7 @@ export function getDailyLeaderboard(stats, roster) {
         dayWins: dailyWins[meme.id] || 0,
         wins: record.wins || 0,
         losses: record.losses || 0,
-        lastMonthMentions: record.lastMonthMentions ?? record.yesterdayMentions ?? 0,
+        lastMonthMentions: record.lastMonthMentions ?? 0,
         totalMentions: record.totalMentions || 0,
       }
     })
