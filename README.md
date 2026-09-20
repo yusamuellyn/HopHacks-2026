@@ -1,5 +1,6 @@
 # HopHacks-2026
 
+MemeArena
 Hackathon project with a FastAPI backend and a React (Vite) frontend.
 
 ## Project structure
