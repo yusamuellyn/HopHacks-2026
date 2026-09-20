@@ -1,5 +1,5 @@
 import os
-from datetime import date
+from datetime import date, timedelta
 from contextlib import contextmanager
 
 from fastapi import FastAPI, HTTPException
@@ -112,59 +112,48 @@ def require_meme(meme_id: str) -> str:
 
 
 def mention_window(cur):
-    cur.execute(
-        """
-        SELECT
-            (date_trunc('month', CURRENT_DATE) - interval '1 month')::date,
-            (SELECT max(created_at)::date FROM meme_mentions)
-        """
-    )
-    last_month_start, latest = cur.fetchone()
-    return last_month_start, latest
+    cur.execute("SELECT max(created_at)::date FROM meme_mentions")
+    latest = cur.fetchone()[0]
+    if latest is None:
+        return None, None
+    return latest - timedelta(days=1), latest
 
 
 def fetch_mention_stats(cur, meme_ids):
-    last_month_start, latest = mention_window(cur)
+    yesterday, latest = mention_window(cur)
     stats = {
-        meme_id: {"lastMonthMentions": 0, "latestMentions": 0, "totalMentions": 0}
+        meme_id: {"yesterdayMentions": 0, "latestMentions": 0, "totalMentions": 0}
         for meme_id in meme_ids
     }
     if not meme_ids:
-        return stats, last_month_start, latest
+        return stats, yesterday, latest
     cur.execute(
         """
         WITH bounds AS (
-            SELECT
-                date_trunc('month', CURRENT_DATE) - interval '1 month' AS month_start,
-                date_trunc('month', CURRENT_DATE) AS month_end,
-                (SELECT max(created_at) FROM meme_mentions) AS latest
+            SELECT max(created_at)::date AS latest FROM meme_mentions
         )
         SELECT
             meme_id,
             count(*) FILTER (
-                WHERE created_at >= (SELECT month_start FROM bounds)
-                  AND created_at < (SELECT month_end FROM bounds)
-            ) AS last_month,
+                WHERE created_at::date = (SELECT latest FROM bounds) - 1
+            ) AS yesterday,
             count(*) FILTER (
-                WHERE created_at::date = (SELECT latest FROM bounds)::date
+                WHERE created_at::date = (SELECT latest FROM bounds)
             ) AS latest,
-            count(*) FILTER (
-                WHERE created_at >= (SELECT month_start FROM bounds)
-                  AND created_at < (SELECT month_end FROM bounds)
-            ) AS total
+            count(*) AS total
         FROM meme_mentions
         WHERE meme_id = ANY(%s)
         GROUP BY meme_id
         """,
         [list(meme_ids)],
     )
-    for meme_id, last_month, latest_count, total in cur.fetchall():
+    for meme_id, yday, latest_count, total in cur.fetchall():
         stats[meme_id] = {
-            "lastMonthMentions": int(last_month or 0),
+            "yesterdayMentions": int(yday or 0),
             "latestMentions": int(latest_count or 0),
             "totalMentions": int(total or 0),
         }
-    return stats, last_month_start, latest
+    return stats, yesterday, latest
 
 
 def fetch_records(cur):
@@ -293,18 +282,18 @@ def fetch_records(cur):
 
 
 def build_stats_payload(cur):
-    mention_stats, last_month, latest = fetch_mention_stats(cur, list(MEME_SEARCH_TERMS))
+    mention_stats, yesterday, latest = fetch_mention_stats(cur, list(MEME_SEARCH_TERMS))
     records = fetch_records(cur)
     fighters = {}
-    max_last_month = 0
+    max_yesterday = 0
     for meme_id in MEME_SEARCH_TERMS:
         mentions = mention_stats.get(meme_id, {})
         record = records["fighters"].get(meme_id, {"wins": 0, "losses": 0, "lastShare": None})
-        last_month_count = int(mentions.get("lastMonthMentions") or 0)
-        max_last_month = max(max_last_month, last_month_count)
+        yday = int(mentions.get("yesterdayMentions") or 0)
+        max_yesterday = max(max_yesterday, yday)
         fighters[meme_id] = {
             **record,
-            "lastMonthMentions": last_month_count,
+            "yesterdayMentions": yday,
             "latestMentions": int(mentions.get("latestMentions") or 0),
             "totalMentions": int(mentions.get("totalMentions") or 0),
         }
@@ -315,10 +304,10 @@ def build_stats_payload(cur):
         "daily": records["daily"],
         "recent": records["recent"],
         "window": {
-            "lastMonth": last_month.isoformat() if last_month else None,
+            "yesterday": yesterday.isoformat() if yesterday else None,
             "latest": latest.isoformat() if latest else None,
         },
-        "maxLastMonth": max_last_month,
+        "maxYesterday": max_yesterday,
     }
 
 
@@ -333,59 +322,54 @@ def stats():
 
 @app.post("/api/battle")
 def battle(payload: BattleRequest):
-    left_id = require_meme(payload.leftId)
-    right_id = require_meme(payload.rightId)
+    left_terms = MEME_SEARCH_TERMS.get(payload.leftId)
+    right_terms = MEME_SEARCH_TERMS.get(payload.rightId)
+
+    if not left_terms or not right_terms:
+        raise HTTPException(status_code=400, detail="Unknown meme id")
+
+    left_conditions = " OR ".join(["body ILIKE %s"] * len(left_terms))
+    right_conditions = " OR ".join(["body ILIKE %s"] * len(right_terms))
+
+    left_params = [f"%{t}%" for t in left_terms]
+    right_params = [f"%{t}%" for t in right_terms]
+
+    # Each condition appears once in the CTE's SELECT (to tag matches) and
+    # once in the CTE's WHERE (to pull in only relevant rows).
+    params = left_params + right_params + left_params + right_params
 
     with db() as conn:
         cur = conn.cursor()
         cur.execute(
             f"""
             WITH bounds AS (
+                SELECT max(created_at) AS latest FROM tweets
+            ),
+            matches AS (
                 SELECT
-                    date_trunc('month', CURRENT_DATE) - interval '1 month' AS month_start,
-                    date_trunc('month', CURRENT_DATE) AS month_end,
-                    (SELECT max(created_at) FROM meme_mentions) AS latest
+                    id,
+                    created_at,
+                    ({left_conditions}) AS is_left,
+                    ({right_conditions}) AS is_right
+                FROM tweets
+                WHERE ({left_conditions}) OR ({right_conditions})
             )
             SELECT
-                count(*) FILTER (WHERE meme_id = %s) AS left_total,
-                count(*) FILTER (WHERE meme_id = %s) AS right_total,
+                count(DISTINCT id) FILTER (WHERE is_left) AS left_total,
+                count(DISTINCT id) FILTER (WHERE is_right) AS right_total,
                 coalesce(sum(exp(-{DECAY_LAMBDA} * extract(epoch FROM (
                     (SELECT latest FROM bounds) - created_at
-                )))) FILTER (WHERE meme_id = %s), 0) AS left_score,
+                )))) FILTER (WHERE is_left), 0) AS left_score,
                 coalesce(sum(exp(-{DECAY_LAMBDA} * extract(epoch FROM (
                     (SELECT latest FROM bounds) - created_at
-                )))) FILTER (WHERE meme_id = %s), 0) AS right_score,
-                count(*) FILTER (
-                    WHERE meme_id = %s
-                      AND created_at::date = (SELECT latest FROM bounds)::date
-                ) AS left_latest,
-                count(*) FILTER (
-                    WHERE meme_id = %s
-                      AND created_at::date = (SELECT latest FROM bounds)::date
-                ) AS right_latest,
-                (SELECT month_start FROM bounds)::date AS month_start,
-                (SELECT latest FROM bounds)::date AS latest
-            FROM meme_mentions
-            WHERE meme_id IN (%s, %s)
-              AND created_at >= (SELECT month_start FROM bounds)
-              AND created_at < (SELECT month_end FROM bounds)
+                )))) FILTER (WHERE is_right), 0) AS right_score
+            FROM matches
             """,
-            [left_id, right_id, left_id, right_id, left_id, right_id, left_id, right_id],
+            params,
         )
-        (
-            left_total,
-            right_total,
-            left_score,
-            right_score,
-            left_latest,
-            right_latest,
-            last_month,
-            latest,
-        ) = cur.fetchone()
+        left_total, right_total, left_score, right_score = cur.fetchone()
         cur.close()
 
-    left_total = int(left_total or 0)
-    right_total = int(right_total or 0)
     if left_total == 0 and right_total == 0:
         winner = None
     else:
@@ -394,17 +378,9 @@ def battle(payload: BattleRequest):
     return {
         "leftTotal": left_total,
         "rightTotal": right_total,
-        "leftScore": float(left_score or 0),
-        "rightScore": float(right_score or 0),
+        "leftScore": float(left_score),
+        "rightScore": float(right_score),
         "winnerId": winner,
-        "leftLastMonth": left_total,
-        "rightLastMonth": right_total,
-        "leftLatest": int(left_latest or 0),
-        "rightLatest": int(right_latest or 0),
-        "window": {
-            "lastMonth": last_month.isoformat() if last_month else None,
-            "latest": latest.isoformat() if latest else None,
-        },
     }
 
 
