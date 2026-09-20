@@ -9,10 +9,6 @@ export function sharesFromCounts(leftMentions, rightMentions) {
   return { leftShare, rightShare: 100 - leftShare }
 }
 
-function clamp(n, lo, hi) {
-  return Math.min(hi, Math.max(lo, n))
-}
-
 function pick(list) {
   return list[Math.floor(Math.random() * list.length)]
 }
@@ -50,24 +46,15 @@ function pickAttacker(leftPower, rightPower, leftDead, rightDead) {
   if (rightDead && !leftDead) return 'left'
   const total = leftPower + rightPower
   if (total <= 0) return Math.random() < 0.5 ? 'left' : 'right'
-  // Tiny jitter so the underdog still throws, but a big lead owns the animations.
-  const jitter = 0.06
-  if (Math.random() < jitter) return Math.random() < 0.5 ? 'left' : 'right'
   return Math.random() < leftPower / total ? 'left' : 'right'
 }
 
-function hitSwing(combo, attackerPower, defenderPower) {
-  const total = attackerPower + defenderPower
-  const strength = total > 0 ? attackerPower / total : 0.5
-  const comboBoost = Math.min(combo, 7) * 1.75
-  return (3.8 + comboBoost) * (0.52 + strength * 0.9) * (0.86 + Math.random() * 0.28)
-}
-
-function settleAmount(progress) {
-  const p = clamp(progress, 0, 1)
-  // Keep most of the fight on hit/combo swings, then lock to the real mention share.
-  if (p < 0.7) return p * 0.22
-  return 0.154 + Math.pow((p - 0.7) / 0.3, 1.15) * 0.846
+function countsAt(elapsed, durationMs, leftTotal, rightTotal) {
+  const progress = Math.min(1, Math.max(0, elapsed / durationMs))
+  return {
+    leftMentions: Math.round(leftTotal * progress),
+    rightMentions: Math.round(rightTotal * progress),
+  }
 }
 
 export function startBattle({
@@ -94,38 +81,27 @@ export function startBattle({
   let lastEmit = 0
   let lastSide = null
   let combo = 0
+  const sideCombo = { left: 0, right: 0 }
   let cancelled = false
   let finished = false
   let frameId = 0
-  let lastTime = started
-  let momentum = 50
-  let pulse = 0
+  let markedLeft = 0
+  let markedRight = 0
 
-  const liveShares = (elapsed) => {
+  const liveShares = (leftMentions, rightMentions) => {
     if (leftDead && !rightDead) return { leftShare: 0, rightShare: 100 }
     if (rightDead && !leftDead) return { leftShare: 100, rightShare: 0 }
-    if (leftDead && rightDead) {
-      if (momentum >= 100) return { leftShare: 100, rightShare: 0 }
-      if (momentum <= 0) return { leftShare: 0, rightShare: 100 }
-      return { leftShare: 50, rightShare: 50 }
-    }
-    const progress = Math.min(1, elapsed / durationMs)
-    const settle = settleAmount(progress)
-    const mixed = momentum * (1 - settle) + trueShares.leftShare * settle
-    const leftShare = clamp(mixed + pulse * (1 - settle), 4, 96)
-    return { leftShare, rightShare: 100 - leftShare }
+    return sharesFromCounts(leftMentions, rightMentions)
   }
 
   const snapshot = (elapsed, event = null) => {
-    const progress = Math.min(1, elapsed / durationMs)
-    const leftExact = leftTotal * progress
-    const rightExact = rightTotal * progress
-    const shares = liveShares(elapsed)
+    const { leftMentions, rightMentions } = countsAt(elapsed, durationMs, leftTotal, rightTotal)
+    const shares = liveShares(leftMentions, rightMentions)
     return {
       elapsed,
       remainingMs: Math.max(0, durationMs - elapsed),
       left: {
-        mentions: Math.round(leftExact),
+        mentions: leftMentions,
         share: shares.leftShare,
         sources: {
           lastMonth: leftLastMonth,
@@ -134,7 +110,7 @@ export function startBattle({
         },
       },
       right: {
-        mentions: Math.round(rightExact),
+        mentions: rightMentions,
         share: shares.rightShare,
         sources: {
           lastMonth: rightLastMonth,
@@ -179,49 +155,73 @@ export function startBattle({
     })
   }
 
+  const emitAttack = (now, elapsed, side, defenderDead, { primary = true } = {}) => {
+    if (primary) {
+      combo = lastSide === side ? combo + 1 : 1
+      lastSide = side
+      lastAttack = now
+    }
+    sideCombo[side] = primary ? combo : (sideCombo[side] || 0) + 1
+    const attacker = side === 'left' ? left : right
+    const defender = side === 'left' ? right : left
+    const lead = side === 'left' ? leftPower >= rightPower : rightPower >= leftPower
+    const hits = primary ? combo : sideCombo[side]
+    return {
+      id: `${Math.round(elapsed)}-${side}-${hits}-${primary ? 'atk' : 'line'}`,
+      side,
+      combo: hits,
+      ko: defenderDead,
+      silent: !primary,
+      text: defenderDead
+        ? `${attacker.name} one-taps ${defender.name}! Dead meme.`
+        : commentaryFor({ attacker, defender, combo: hits, lead }),
+    }
+  }
+
   const tick = (now) => {
     if (cancelled || finished) return
     const elapsed = now - started
-    const dt = Math.max(0, (now - lastTime) / 1000)
-    lastTime = now
-    pulse *= Math.exp(-dt * 3.4)
     let event = null
+    let emitted = false
+    const { leftMentions, rightMentions } = countsAt(elapsed, durationMs, leftTotal, rightTotal)
 
     if (elapsed < durationMs && now - lastAttack >= attackMs) {
-      lastAttack = now
-      const side = pickAttacker(leftPower, rightPower, leftDead, rightDead)
-      combo = lastSide === side ? combo + 1 : 1
-      lastSide = side
-      const attacker = side === 'left' ? left : right
-      const defender = side === 'left' ? right : left
-      const lead = side === 'left' ? leftPower >= rightPower : rightPower >= leftPower
-      const attackerPower = side === 'left' ? leftPower : rightPower
-      const defenderPower = side === 'left' ? rightPower : leftPower
-      const defenderDead = side === 'left' ? rightDead : leftDead
-      const delta = defenderDead ? 50 : hitSwing(combo, attackerPower, defenderPower)
-      const signed = side === 'left' ? delta : -delta
-      momentum = defenderDead ? (side === 'left' ? 100 : 0) : clamp(momentum + signed, 8, 92)
-      pulse = defenderDead ? 0 : signed * 0.55
-      event = {
-        id: `${Math.round(elapsed)}-${side}-${combo}`,
-        side,
-        combo,
-        delta,
-        ko: defenderDead,
-        text: defenderDead
-          ? `${attacker.name} one-taps ${defender.name}! Dead meme.`
-          : commentaryFor({ attacker, defender, combo, lead }),
-      }
-
-      if (defenderDead) {
+      if (leftDead || rightDead) {
+        const side = pickAttacker(leftPower, rightPower, leftDead, rightDead)
+        const defenderDead = side === 'left' ? rightDead : leftDead
+        event = emitAttack(now, elapsed, side, defenderDead)
+        markedLeft = leftMentions
+        markedRight = rightMentions
         lastEmit = now
         onTick(snapshot(elapsed, event))
-        finish(side, elapsed)
-        return
+        emitted = true
+        if (defenderDead) {
+          finish(side, elapsed)
+          return
+        }
+      } else {
+        const leftGain = leftMentions - markedLeft
+        const rightGain = rightMentions - markedRight
+        if (leftGain > 0 || rightGain > 0) {
+          markedLeft = leftMentions
+          markedRight = rightMentions
+          const primary =
+            leftGain > rightGain ? 'left' : rightGain > leftGain ? 'right' : pickAttacker(leftPower, rightPower, false, false)
+          event = emitAttack(now, elapsed, primary, false)
+          lastEmit = now
+          onTick(snapshot(elapsed, event))
+          emitted = true
+          const other = primary === 'left' ? 'right' : 'left'
+          const otherGain = other === 'left' ? leftGain : rightGain
+          if (otherGain > 0) {
+            const echo = emitAttack(now, elapsed, other, false, { primary: false })
+            onTick(snapshot(elapsed, echo))
+          }
+        }
       }
     }
 
-    if (event || now - lastEmit > 50 || elapsed >= durationMs) {
+    if (!emitted && (now - lastEmit > 50 || elapsed >= durationMs)) {
       lastEmit = now
       onTick(snapshot(elapsed, event))
     }

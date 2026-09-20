@@ -30,7 +30,6 @@ export default function CharacterSelect({ left, right, stats, onSelectLeft, onSe
           label="Choose Fighter 1"
           value={left}
           excludeId={right?.id}
-          stats={stats}
           onSelect={onSelectLeft}
         />
         <MemeSearch
@@ -38,7 +37,6 @@ export default function CharacterSelect({ left, right, stats, onSelectLeft, onSe
           label="Choose Fighter 2"
           value={right}
           excludeId={left?.id}
-          stats={stats}
           onSelect={onSelectRight}
         />
       </div>

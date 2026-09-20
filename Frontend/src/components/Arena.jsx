@@ -23,6 +23,12 @@ function roundShare(n) {
   return Math.round(n)
 }
 
+function leadSide(leftShare, rightShare) {
+  if (leftShare > rightShare) return 'left'
+  if (rightShare > leftShare) return 'right'
+  return 'tie'
+}
+
 function fighterMotion(share, side, over = false) {
   const lead = (share - 50) / 50
   const extra = over ? Math.abs(lead) * 0.16 : 0
@@ -71,7 +77,8 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
   const sfx = useSfx()
   const sfxRef = useRef(sfx)
   sfxRef.current = sfx
-  const [feed, setFeed] = useState([])
+  const [leftLines, setLeftLines] = useState([])
+  const [rightLines, setRightLines] = useState([])
   const [frame, setFrame] = useState(null)
   const [result, setResult] = useState(null)
   const [showRecap, setShowRecap] = useState(false)
@@ -89,7 +96,8 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
   const [loadError, setLoadError] = useState(null)
   const seenEaster = useRef(new Set())
   const ended = useRef(false)
-  const feedRef = useRef(null)
+  const leftFeedRef = useRef(null)
+  const rightFeedRef = useRef(null)
   const lastSide = useRef(null)
   const combosRef = useRef({ left: 0, right: 0 })
   const maxCombosRef = useRef({ left: 0, right: 0 })
@@ -114,7 +122,8 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
     setTotals(null)
     setLoadError(null)
     setFrame(null)
-    setFeed([])
+    setLeftLines([])
+    setRightLines([])
     setResult(null)
     fetch('/api/battle', {
       method: 'POST',
@@ -156,7 +165,8 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
     lastSide.current = null
     setMaxCombos({ left: 0, right: 0 })
     setCombos({ left: 0, right: 0 })
-    setFeed([])
+    setLeftLines([])
+    setRightLines([])
     setSwing(null)
     setRates({
       left: Math.round((totals.leftTotal / (FIGHT_MS / 1000)) * 60),
@@ -190,7 +200,11 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
         setFrame(next)
         if (!next.event) return
 
-        setFeed((lines) => [next.event, ...lines].slice(0, 18))
+        const lane = next.event.side === 'right' ? 'right' : 'left'
+        const pushLine = (lines) => [next.event, ...lines].slice(0, 10)
+        if (lane === 'left') setLeftLines(pushLine)
+        else setRightLines(pushLine)
+        if (next.event.silent) return
         setSwing(next.event.side)
         window.setTimeout(() => setSwing((side) => (side === next.event.side ? null : side)), 240)
 
@@ -302,11 +316,16 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
   useEffect(() => () => stopAnnouncer(), [])
 
   useEffect(() => {
-    feedRef.current?.scrollTo({ top: 0 })
-  }, [feed])
+    leftFeedRef.current?.scrollTo({ top: 0 })
+  }, [leftLines])
+
+  useEffect(() => {
+    rightFeedRef.current?.scrollTo({ top: 0 })
+  }, [rightLines])
 
   const leftShare = frame?.left.share ?? 50
   const rightShare = frame?.right.share ?? 50
+  const commentaryLead = leadSide(leftShare, rightShare)
   const remaining = Math.ceil((frame?.remainingMs ?? FIGHT_MS) / 1000)
   const leftMentions = frame?.left.mentions ?? 0
   const rightMentions = frame?.right.mentions ?? 0
@@ -414,18 +433,47 @@ export default function Arena({ left, right, stats, onRematch, onBattleEnd }) {
       </div>
 
       <div className="arena__dock">
-        <div className="ticker" ref={feedRef}>
-          <h3>Fight commentary</h3>
-          {loadError && <p className="ticker__line">{loadError}</p>}
-          {!loadError && !totals && <p className="ticker__line">Searching mentions...</p>}
-          {feed.map((line) => (
-            <p key={line.id} className={`ticker__line ticker__line--${line.side}`}>
-              {line.text}
-            </p>
-          ))}
-          {totals && feed.length === 0 && !loadError && (
-            <p className="ticker__line">The bell is about to ring...</p>
-          )}
+        <div className="ticker">
+          <h3>Fight feed</h3>
+          {loadError && <p className="ticker__status">{loadError}</p>}
+          {!loadError && !totals && <p className="ticker__status">Searching mentions...</p>}
+          <div className="ticker__split">
+            <div className="ticker__lane ticker__lane--left" ref={leftFeedRef}>
+              {leftLines.map((line) => (
+                <p key={line.id} className="ticker__line ticker__line--left">
+                  {line.text}
+                </p>
+              ))}
+              {totals && leftLines.length === 0 && rightLines.length === 0 && !loadError && (
+                <p className="ticker__line ticker__line--left">The bell is about to ring...</p>
+              )}
+            </div>
+            <div
+              className={`ticker__arrow ticker__arrow--${commentaryLead}`}
+              role="img"
+              aria-label={
+                commentaryLead === 'left'
+                  ? `${left.name} leading`
+                  : commentaryLead === 'right'
+                    ? `${right.name} leading`
+                    : 'Tied'
+              }
+            >
+              <svg className="ticker__arrow-glyph" viewBox="0 0 64 64" aria-hidden="true">
+                <path d="M8 26h24V14l24 18-24 18V38H8z" />
+              </svg>
+            </div>
+            <div className="ticker__lane ticker__lane--right" ref={rightFeedRef}>
+              {rightLines.map((line) => (
+                <p key={line.id} className="ticker__line ticker__line--right">
+                  {line.text}
+                </p>
+              ))}
+              {totals && rightLines.length === 0 && leftLines.length === 0 && !loadError && (
+                <p className="ticker__line ticker__line--right">The bell is about to ring...</p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

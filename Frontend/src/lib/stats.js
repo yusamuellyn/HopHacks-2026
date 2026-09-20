@@ -112,12 +112,6 @@ export function getFighterRecord(stats, memeId) {
   }
 }
 
-export function isDeadMeme(stats, memeId) {
-  const record = stats?.fighters?.[memeId]
-  if (!record) return false
-  return Number(record.lastMonthMentions ?? 0) <= 0
-}
-
 export function getDailyLeaderboard(stats, roster) {
   const day = todayKey()
   const dailyWins = stats.daily?.date === day ? stats.daily.wins || {} : {}
